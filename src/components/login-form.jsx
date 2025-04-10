@@ -1,19 +1,53 @@
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+// Core imports
+import axios from "axios";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../contexts/authContext";
+
+// Shadcn components
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-export function LoginForm({
-  className,
-  ...props
-}) {
+export function LoginForm({ className, ...props }) {
+  // Login Functionality
+  // Setters
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState();
+  const nav = useNavigate();
+  const { authenticateUser } = useContext(AuthContext);
+
+  // Handle Login
+  async function handleLogin(event) {
+    event.preventDefault();
+    const userToLogin = { email, password };
+
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/login`,
+        userToLogin
+      );
+      console.log("user was logged in successfully", res.data);
+      localStorage.setItem("authToken", res.data.authToken);
+      return authenticateUser();
+      nav("/profile");
+    } catch (err) {
+      console.log(err);
+      setErrorMessage(err.response?.data?.errorMessage || "Login failed");
+    }
+  }
+
+  // This returns the component
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="bg-card text-card-foreground">
@@ -28,14 +62,20 @@ export function LoginForm({
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="m@example.com" required />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="m@example.com"
+                  required
+                />
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <a
                     href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
+                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                  >
                     Forgot your password?
                   </a>
                 </div>
@@ -45,9 +85,9 @@ export function LoginForm({
                 <Button type="submit" className="w-full">
                   Login
                 </Button>
-                <Button variant="outline" className="w-full">
+                {/* <Button variant="outline" className="w-full">
                   Login with Google
-                </Button>
+                </Button> */}
               </div>
             </div>
             <div className="mt-4 text-center text-sm">
