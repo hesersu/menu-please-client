@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 
 export function LoginForm({ className, ...props }) {
   // Login Functionality
+
   // Setters
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,8 +39,8 @@ export function LoginForm({ className, ...props }) {
       );
       console.log("user was logged in successfully", res.data);
       localStorage.setItem("authToken", res.data.authToken);
-      return authenticateUser();
       nav("/profile");
+      return authenticateUser();
     } catch (err) {
       console.log(err);
       setErrorMessage(err.response?.data?.errorMessage || "Login failed");
@@ -58,7 +59,7 @@ export function LoginForm({ className, ...props }) {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form onSubmit={handleLogin}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
@@ -67,6 +68,10 @@ export function LoginForm({ className, ...props }) {
                   type="email"
                   placeholder="m@example.com"
                   required
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
                 />
               </div>
               <div className="grid gap-3">
@@ -79,7 +84,15 @@ export function LoginForm({ className, ...props }) {
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                />
               </div>
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full">
@@ -91,10 +104,10 @@ export function LoginForm({ className, ...props }) {
               </div>
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
+              Don't have an account?{" "}
+              <Link to="/sign-up" className="underline underline-offset-4">
                 Sign up
-              </a>
+              </Link>
             </div>
           </form>
         </CardContent>
