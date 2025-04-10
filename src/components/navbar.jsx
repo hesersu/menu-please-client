@@ -1,4 +1,9 @@
-import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
+import { useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
+import { Link } from "react-router-dom";
+
+// Shadcn Components
+import { Book, BookA, Menu, MenuIcon, Sunset, Trees, Zap } from "lucide-react";
 
 import {
   Accordion,
@@ -21,7 +26,10 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
+  SheetDescription,
 } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 
 export const Navbar1 = ({
   logo = {
@@ -32,83 +40,20 @@ export const Navbar1 = ({
   },
 
   menu = [
-    { title: "Home", url: "#" },
-    {
-      title: "Products",
-      url: "#",
-      items: [
-        {
-          title: "Blog",
-          description: "The latest industry news, updates, and info",
-          icon: <Book className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Company",
-          description: "Our mission is to innovate and empower the world",
-          icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Careers",
-          description: "Browse job listing and discover our workspace",
-          icon: <Sunset className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Support",
-          description:
-            "Get in touch with our support team or visit our community forums",
-          icon: <Zap className="size-5 shrink-0" />,
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Resources",
-      url: "#",
-      items: [
-        {
-          title: "Help Center",
-          description: "Get all the answers you need right here",
-          icon: <Zap className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Contact Us",
-          description: "We are here to help you with any questions you have",
-          icon: <Sunset className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Status",
-          description: "Check the current status of our services and APIs",
-          icon: <Trees className="size-5 shrink-0" />,
-          url: "#",
-        },
-        {
-          title: "Terms of Service",
-          description: "Our terms and conditions for using our services",
-          icon: <Book className="size-5 shrink-0" />,
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Pricing",
-      url: "#",
-    },
-    {
-      title: "Blog",
-      url: "#",
-    },
+    { title: `Add Menu`, url: "#" },
+    { title: "History", url: "#" },
+    { title: "Settings", url: "#" },
   ],
 
   auth = {
     login: { title: "Login", url: "#" },
-    signup: { title: "Sign up", url: "#" },
   },
 }) => {
+  // Login Status
+
+  const { isLoggedIn, handleLogout, currentUser } = useContext(AuthContext);
+
+  // Page Content
   return (
     <section className="py-4">
       <div>
@@ -125,18 +70,28 @@ export const Navbar1 = ({
             <div className="flex items-center">
               <NavigationMenu>
                 <NavigationMenuList>
-                  {menu.map((item) => renderMenuItem(item))}
+                  {isLoggedIn ? menu.map((item) => renderMenuItem(item)) : null}
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm">
-              <a href={auth.login.url}>{auth.login.title}</a>
-            </Button>
-            <Button asChild size="sm" className="mr-8">
-              <a href={auth.signup.url}>{auth.signup.title}</a>
-            </Button>
+            {isLoggedIn ? (
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className="mr-8"
+              >
+                Logout
+              </Button>
+            ) : (
+              <Link to="/login">
+                <Button variant="outline" size="sm" className="mr-8">
+                  Login
+                </Button>
+              </Link>
+            )}
           </div>
         </nav>
 
@@ -155,29 +110,52 @@ export const Navbar1 = ({
               </SheetTrigger>
               <SheetContent className="overflow-y-auto">
                 <SheetHeader>
-                  <SheetTitle>
-                    <a href={logo.url} className="flex items-center gap-2">
-                      <img src={logo.src} className="max-h-8" alt={logo.alt} />
-                    </a>
-                  </SheetTitle>
+                  <SheetTitle className="font-light text-sm">Menu</SheetTitle>
+                  <div className="flex flex-row align-center mb-5">
+                    <Avatar className="h-12 w-12 mr-5 mt-5">
+                      <AvatarImage
+                        src="https://github.com/shadcn.png"
+                        alt="@shadcn"
+                      />
+                      <AvatarFallback>
+                        {currentUser && currentUser.username.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <SheetDescription className="h-12 mr-5 mt-5 font-normal text-3xl text-white content-center">
+                      Welcome, {currentUser && currentUser.username}!
+                    </SheetDescription>
+                  </div>
+                  <Separator />
                 </SheetHeader>
-                <div className="flex flex-col gap-6 p-4">
+                <div className="flex flex-col gap-6 px-4">
                   <Accordion
                     type="single"
                     collapsible
-                    className="flex w-full flex-col gap-4"
+                    className="flex w-full flex-col gap-5 mb-3"
                   >
-                    {menu.map((item) => renderMobileMenuItem(item))}
+                    {isLoggedIn
+                      ? menu.map((item) => renderMobileMenuItem(item))
+                      : null}
                   </Accordion>
-
-                  <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <a href={auth.login.url}>{auth.login.title}</a>
-                    </Button>
-                    <Button asChild>
-                      <a href={auth.signup.url}>{auth.signup.title}</a>
-                    </Button>
-                  </div>
+                  <Separator />
+                  <div className="flex flex-col gap-3 pt-5">
+                    {isLoggedIn ? (
+                      <Button
+                        onClick={handleLogout}
+                        variant="outline"
+                        size="sm"
+                        className="mr-8"
+                      >
+                        Logout
+                      </Button>
+                    ) : (
+                      <Link to="/login">
+                        <Button variant="outline" size="sm" className="mr-8">
+                          Login
+                        </Button>
+                      </Link>
+                    )}
+np                  </div>
                 </div>
               </SheetContent>
             </Sheet>
