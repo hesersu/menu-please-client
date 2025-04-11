@@ -1,11 +1,12 @@
 import axios from "axios";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   GoogleGenAI,
   createUserContent,
   createPartFromUri,
 } from "@google/genai";
+import { AuthContext } from "./authContext";
 
 const MenuContext = createContext();
 
@@ -13,18 +14,8 @@ const MenuContextWrapper = ({ children }) => {
   const [currentMenu, setCurrentMenu] = useState(null);
   const [currentRestaurantId, setCurrentRestaurantId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const {currentUser} = useContext(AuthContext);
   const nav = useNavigate();
-
-  //* Handle create restaurant function
-
-  async function handleCreateMenu(event, formMenuData) {
-    event.preventDefault();
-    console.log(formMenuData);
-  }
-
-  // //! Backup for quickly calling menu
-  // handleCreateRestaurant(formMenuData.name, formMenuData.location);
-  // handleGeminiTranslation();
 
   //* Handle create restaurant
 
@@ -41,8 +32,32 @@ const MenuContextWrapper = ({ children }) => {
       console.log("Error creating restaurant", err);
     }
   }
-
-  //   async function getMenuDataFromGoogle(){
+  
+  //* Handle create menu
+  
+  async function handleCreateMenu (event, formMenuData) {
+    event.preventDefault();  
+    //Use Form Data because it is not only JSON, but mixed files incl. Image
+    if(currentUser){
+    const myFormData = new FormData()
+    console.log(currentUser)
+    myFormData.append('owner_id', currentUser._id)
+    myFormData.append('language', formMenuData.language)
+    myFormData.append('menuImg', formMenuData.file)
+    for (let [key, value] of myFormData.entries()) {
+        console.log(`${key}:`, value);
+      }
+    try {
+        const {data} = await axios.post(`${import.meta.env.VITE_API_URL}/menus/create`, myFormData)
+        console.log(data)
+    } 
+    catch(err) { 
+        console.log(err)
+    }
+   }
+  }
+  
+  //* Handle google Gemini Translation
 
   const ai = new GoogleGenAI({
     apiKey: import.meta.env.VITE_GEMINI_API,
@@ -111,8 +126,6 @@ const MenuContextWrapper = ({ children }) => {
     });
     console.log(response.text);
   }
-
-  //   }
 
   return (
     <MenuContext.Provider
