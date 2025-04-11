@@ -28,6 +28,7 @@ const MenuContextWrapper = ({ children }) => {
       );
       console.log("Restaurant Created", createdRestaurant.data._id);
       setCurrentRestaurantId(createdRestaurant.data._id);
+      return createdRestaurant.data._id;
     } catch (err) {
       console.log("Error creating restaurant", err);
     }
@@ -38,12 +39,15 @@ const MenuContextWrapper = ({ children }) => {
   async function handleCreateMenu (event, formMenuData) {
     event.preventDefault();  
     //Use Form Data because it is not only JSON, but mixed files incl. Image
+    const restaurant_id = await handleCreateRestaurant(formMenuData.name, formMenuData.location)
     if(currentUser){
     const myFormData = new FormData()
     console.log(currentUser)
     myFormData.append('owner_id', currentUser._id)
     myFormData.append('language', formMenuData.language)
     myFormData.append('menuImg', formMenuData.file)
+    console.log(restaurant_id)
+    myFormData.append('restaurant_id', restaurant_id)
     for (let [key, value] of myFormData.entries()) {
         console.log(`${key}:`, value);
       }
