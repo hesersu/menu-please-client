@@ -39,21 +39,23 @@ const MenuContextWrapper = ({ children }) => {
   async function handleCreateMenu (event, formMenuData) {
     event.preventDefault();  
     //Use Form Data because it is not only JSON, but mixed files incl. Image
+    const dishes = await handleGeminiTranslation(formMenuData.file)
+    console.log("dishes", typeof dishes)
     const restaurant_id = await handleCreateRestaurant(formMenuData.name, formMenuData.location)
     if(currentUser){
     const myFormData = new FormData()
-    console.log(currentUser)
     myFormData.append('owner_id', currentUser._id)
     myFormData.append('language', formMenuData.language)
     myFormData.append('menuImg', formMenuData.file)
-    console.log(restaurant_id)
     myFormData.append('restaurant_id', restaurant_id)
     for (let [key, value] of myFormData.entries()) {
-        console.log(`${key}:`, value);
+        //console.log(`${key}:`, value);
       }
     try {
-        const {data} = await axios.post(`${import.meta.env.VITE_API_URL}/menus/create`, myFormData)
-        console.log(data)
+        const responseCreate = await axios.post(`${import.meta.env.VITE_API_URL}/menus/create`, myFormData)
+        console.log("create response", responseCreate.data._id)
+        const responsePatch = await axios.patch(`${import.meta.env.VITE_API_URL}/menus/update-menu/${responseCreate.data._id}`, {dishes:JSON.parse(dishes)})
+        console.log("patch response", responsePatch.data)
     } 
     catch(err) { 
         console.log(err)
@@ -67,9 +69,9 @@ const MenuContextWrapper = ({ children }) => {
     apiKey: import.meta.env.VITE_GEMINI_API,
   });
 
-  async function handleGeminiTranslation() {
+  async function handleGeminiTranslation(imageFile) {
     const image = await ai.files.upload({
-      file: "../assets/test-menu.png",
+      file: imageFile,
     });
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
@@ -129,6 +131,7 @@ const MenuContextWrapper = ({ children }) => {
       },
     });
     console.log(response.text);
+    return response.text;
   }
 
   return (
