@@ -29,6 +29,7 @@ const AuthContextWrapper = ({ children }) => {
         );
         console.log("authenticate user function", repsonseFromVerifyRoute);
         setCurrentUser(repsonseFromVerifyRoute.data.payload);
+        console.log(repsonseFromVerifyRoute.data.payload)
         setIsLoading(false);
         setIsLoggedIn(true);
       } catch (error) {
