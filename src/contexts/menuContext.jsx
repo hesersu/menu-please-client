@@ -9,18 +9,35 @@ const MenuContextWrapper = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const nav = useNavigate();
 
-  async function handleCreateMenu (event, formMenuData) {
-    event.preventDefault();  
+  //* Handle create restaurant function
+
+  async function handleCreateMenu(event, formMenuData) {
+    event.preventDefault();
+
     console.log(formMenuData);
-  }  
+  }
 
-//   async function handleCreateRestaurant() {
+  //! Backup for quickly calling menu
+  // handleCreateRestaurant(formMenuData.name, formMenuData.location);
 
-//   }
+  //* Handle create restaurant
 
-//   async function getMenuDataFromGoogle(){
+  async function handleCreateRestaurant(name, location) {
+    const restaurantObject = { name, location };
+    try {
+      const createdRestaurant = await axios.post(
+        `${import.meta.env.VITE_API_URL}/restaurants/create`,
+        restaurantObject
+      );
+      console.log("Restaurant Created", createdRestaurant);
+    } catch (err) {
+      console.log("Error creating restaurant", err);
+    }
+  }
 
-//   }
+  //   async function getMenuDataFromGoogle(){
+
+  //   }
 
   return (
     <MenuContext.Provider
@@ -28,7 +45,8 @@ const MenuContextWrapper = ({ children }) => {
         currentMenu,
         setCurrentMenu,
         isLoading,
-        handleCreateMenu
+        handleCreateMenu,
+        handleCreateRestaurant,
       }}
     >
       {children}
