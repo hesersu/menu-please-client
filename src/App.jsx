@@ -5,6 +5,7 @@ import { LoginPage } from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import { Navbar1 } from "./components/navbar";
 import { TranslateMenuPage } from "./pages/TranslateMenuPage";
+import ResultPage from "./pages/ResultPage";
 
 function App() {
   return (
@@ -14,7 +15,8 @@ function App() {
         <Route path="/sign-up" element={<SignUpPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/translate-menu" element={<TranslateMenuPage/>} />
+        <Route path="/translate-menu" element={<TranslateMenuPage />} />
+        <Route path="/results" element={<ResultPage />} />
       </Routes>
     </>
   );
