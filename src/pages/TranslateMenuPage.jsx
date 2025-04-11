@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Button } from "@/components/ui/button"
 import { AspectRatio } from '@radix-ui/react-aspect-ratio'
 import {
@@ -12,21 +12,25 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import axios from "axios"
 import { useState } from "react"
+import { MenuContext } from '@/contexts/menuContext'
 
 export const TranslateMenuPage = () => {
 
 const [preview, setPreview] = useState(null);
 const [file, setFile] = useState(null);
 const [fileName, setFileName] =useState("");
+const [menuLanguage, setMenuLanguage] = useState("");
+const { handleCreateMenu } = useContext(MenuContext);
 
-const handleImageChange = (e) => {
-    const selected = e.target.files[0];
-    if (selected) {
-    setFile(selected);
-    setFileName(selected.name);
-    setPreview(URL.createObjectURL(selected)); // for preview
+const handleImageChange = (e) => {    
+    const selectedImage = e.target.files[0];
+    if (selectedImage) {
+    setFile(selectedImage);
+    setFileName(selectedImage.name);
+    setPreview(URL.createObjectURL(selectedImage)); // for preview
     }
 };
+
 
   return (
     <div className="flex flex-col gap-6">
@@ -35,12 +39,17 @@ const handleImageChange = (e) => {
           <CardTitle>Upload or take a picture of the menu</CardTitle>
         </CardHeader>
         <CardContent>
-            <form className="flex flex-col gap-6">
+            <form 
+            className="flex flex-col gap-6" 
+            onSubmit = {(event)=> {handleCreateMenu(event, {menuLanguage, file})
+            }}>
                 <div className = "grid gap-3">      
                     <label htmlFor="select-language">Please select menu language</label>
                     <select 
                     id = "select-language"
                     className="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                    value = {menuLanguage}
+                    onChange={(e)=>setMenuLanguage(e.target.value)}
                     >
                         <option value="">Select Language</option>
                         <option value="Chinese">Chinese</option>
