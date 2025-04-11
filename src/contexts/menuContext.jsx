@@ -6,6 +6,7 @@ const MenuContext = createContext();
 
 const MenuContextWrapper = ({ children }) => {
   const [currentMenu, setCurrentMenu] = useState(null);
+  const [currentRestaurantId, setCurrentRestaurantId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const nav = useNavigate();
 
@@ -13,11 +14,11 @@ const MenuContextWrapper = ({ children }) => {
 
   async function handleCreateMenu(event, formMenuData) {
     event.preventDefault();
-
+    handleCreateRestaurant(formMenuData.name, formMenuData.location);
     console.log(formMenuData);
   }
 
-  //! Backup for quickly calling menu
+  // //! Backup for quickly calling menu
   // handleCreateRestaurant(formMenuData.name, formMenuData.location);
 
   //* Handle create restaurant
@@ -29,7 +30,8 @@ const MenuContextWrapper = ({ children }) => {
         `${import.meta.env.VITE_API_URL}/restaurants/create`,
         restaurantObject
       );
-      console.log("Restaurant Created", createdRestaurant);
+      console.log("Restaurant Created", createdRestaurant.data._id);
+      setCurrentRestaurantId(createdRestaurant.data._id);
     } catch (err) {
       console.log("Error creating restaurant", err);
     }
