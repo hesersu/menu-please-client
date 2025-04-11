@@ -19,10 +19,10 @@ export const TranslateMenuPage = () => {
 const [preview, setPreview] = useState(null);
 const [file, setFile] = useState(null);
 const [fileName, setFileName] =useState("");
-const [menuLanguage, setMenuLanguage] = useState("");
+const [language, setLanguage] = useState("");
 const { handleCreateMenu } = useContext(MenuContext);
 
-const handleImageChange = (e) => {    
+const handleImageChange = (e) => {   
     const selectedImage = e.target.files[0];
     if (selectedImage) {
     setFile(selectedImage);
@@ -41,15 +41,15 @@ const handleImageChange = (e) => {
         <CardContent>
             <form 
             className="flex flex-col gap-6" 
-            onSubmit = {(event)=> {handleCreateMenu(event, {menuLanguage, file})
+            onSubmit = {(event)=> {handleCreateMenu(event, {language, file})
             }}>
                 <div className = "grid gap-3">      
                     <label htmlFor="select-language">Please select menu language</label>
                     <select 
                     id = "select-language"
                     className="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                    value = {menuLanguage}
-                    onChange={(e)=>setMenuLanguage(e.target.value)}
+                    value = {language}
+                    onChange={(e)=>setLanguage(e.target.value)}
                     >
                         <option value="">Select Language</option>
                         <option value="Chinese">Chinese</option>
