@@ -31,7 +31,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
-export const Navbar1 = ({
+export const Navbar = ({
   logo = {
     url: "/",
     src: "https://shadcnblocks.com/images/block/logos/shadcnblockscom-icon.svg",
@@ -155,7 +155,8 @@ export const Navbar1 = ({
                         </Button>
                       </Link>
                     )}
-np                  </div>
+                    np{" "}
+                  </div>
                 </div>
               </SheetContent>
             </Sheet>
