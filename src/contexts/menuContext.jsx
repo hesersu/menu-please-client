@@ -15,6 +15,8 @@ const MenuContextWrapper = ({ children }) => {
   const [currentRestaurantId, setCurrentRestaurantId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const {currentUser} = useContext(AuthContext);
+  const [allMenusOneUser, setAllMenusOneUser] = useState(null);
+  const [allMenusOneUserLoading, setAllMenusOneUserLoading] = useState(true)
   const nav = useNavigate();
 
   //* Handle create restaurant
@@ -134,6 +136,15 @@ const MenuContextWrapper = ({ children }) => {
     return response.text;
   }
 
+  async function getAllMenusForOneUser(){
+    try{
+    const allMenusforOneUser = await axios.get(`${import.meta.env.VITE_API_URL}/menus/all-menus-one-user?ownerId=${currentUser._id}`)
+    console.log(allMenusforOneUser.data)
+    setAllMenusOneUser(allMenusforOneUser.data)
+    setAllMenusOneUserLoading(false);
+  } catch(err){console.log(err)}
+  }
+
   return (
     <MenuContext.Provider
       value={{
@@ -142,6 +153,9 @@ const MenuContextWrapper = ({ children }) => {
         isLoading,
         handleCreateMenu,
         handleCreateRestaurant,
+        getAllMenusForOneUser,
+        allMenusOneUser,
+        allMenusOneUserLoading
       }}
     >
       {children}
