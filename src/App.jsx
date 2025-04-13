@@ -5,6 +5,7 @@ import { LoginPage } from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
 import { Navbar } from "./components/navbar";
 import { TranslateMenuPage } from "./pages/TranslateMenuPage";
+import { MenuHistoryPage } from "./pages/MenuHistoryPage";
 import ResultPage from "./pages/ResultPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
@@ -15,6 +16,14 @@ function App() {
       <Routes>
         <Route path="/sign-up" element={<SignUpPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route 
+        path="/menu-history" 
+        element={
+          <ProtectedRoute>
+              <MenuHistoryPage/>
+          </ProtectedRoute>
+        } 
+        />
         <Route
           path="/profile"
           element={

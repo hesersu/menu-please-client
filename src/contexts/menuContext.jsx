@@ -14,7 +14,9 @@ const MenuContextWrapper = ({ children }) => {
   const [currentMenu, setCurrentMenu] = useState(null);
   const [currentRestaurantId, setCurrentRestaurantId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const { currentUser } = useContext(AuthContext);
+  const {currentUser} = useContext(AuthContext);
+  const [allMenusOneUser, setAllMenusOneUser] = useState(null);
+  const [allMenusOneUserLoading, setAllMenusOneUserLoading] = useState(true)
   const nav = useNavigate();
 
   useEffect(() => {
@@ -150,6 +152,16 @@ const MenuContextWrapper = ({ children }) => {
     return response.text;
   }
 
+  //* Get All Menus for One User
+
+  async function getAllMenusForOneUser(){
+    try{
+    const allMenusforOneUser = await axios.get(`${import.meta.env.VITE_API_URL}/menus/all-menus-one-user?ownerId=${currentUser._id}`)
+    console.log(allMenusforOneUser.data)
+    setAllMenusOneUser(allMenusforOneUser.data)
+    setAllMenusOneUserLoading(false);
+  } catch(err){console.log(err)}
+  
   //* Get One Menu
 
   async function handleGetOneMenu(oneMenuId) {
@@ -172,6 +184,9 @@ const MenuContextWrapper = ({ children }) => {
         isLoading,
         handleCreateMenu,
         handleCreateRestaurant,
+        getAllMenusForOneUser,
+        allMenusOneUser,
+        allMenusOneUserLoading
         handleGetOneMenu,
       }}
     >
