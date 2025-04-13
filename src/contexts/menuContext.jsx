@@ -14,8 +14,12 @@ const MenuContextWrapper = ({ children }) => {
   const [currentMenu, setCurrentMenu] = useState(null);
   const [currentRestaurantId, setCurrentRestaurantId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const {currentUser} = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
   const nav = useNavigate();
+
+  useEffect(() => {
+    console.log("currentMenu changed:", currentMenu);
+  }, [currentMenu]);
 
   //* Handle create restaurant
 
@@ -33,36 +37,48 @@ const MenuContextWrapper = ({ children }) => {
       console.log("Error creating restaurant", err);
     }
   }
-  
+
   //* Handle create menu
-  
-  async function handleCreateMenu (event, formMenuData) {
-    event.preventDefault();  
+
+  async function handleCreateMenu(event, formMenuData) {
+    event.preventDefault();
     //Use Form Data because it is not only JSON, but mixed files incl. Image
-    const dishes = await handleGeminiTranslation(formMenuData.file)
-    console.log("dishes", typeof dishes)
-    const restaurant_id = await handleCreateRestaurant(formMenuData.name, formMenuData.location)
-    if(currentUser){
-    const myFormData = new FormData()
-    myFormData.append('owner_id', currentUser._id)
-    myFormData.append('language', formMenuData.language)
-    myFormData.append('menuImg', formMenuData.file)
-    myFormData.append('restaurant_id', restaurant_id)
-    for (let [key, value] of myFormData.entries()) {
+    const dishes = await handleGeminiTranslation(formMenuData.file);
+    console.log("dishes", typeof dishes);
+    const restaurant_id = await handleCreateRestaurant(
+      formMenuData.name,
+      formMenuData.location
+    );
+    if (currentUser) {
+      const myFormData = new FormData();
+      myFormData.append("owner_id", currentUser._id);
+      myFormData.append("language", formMenuData.language);
+      myFormData.append("menuImg", formMenuData.file);
+      myFormData.append("restaurant_id", restaurant_id);
+      for (let [key, value] of myFormData.entries()) {
         //console.log(`${key}:`, value);
       }
-    try {
-        const responseCreate = await axios.post(`${import.meta.env.VITE_API_URL}/menus/create`, myFormData)
-        console.log("create response", responseCreate.data._id)
-        const responsePatch = await axios.patch(`${import.meta.env.VITE_API_URL}/menus/update-menu/${responseCreate.data._id}`, {dishes:JSON.parse(dishes)})
-        console.log("patch response", responsePatch.data)
-    } 
-    catch(err) { 
-        console.log(err)
+      try {
+        const responseCreate = await axios.post(
+          `${import.meta.env.VITE_API_URL}/menus/create`,
+          myFormData
+        );
+        console.log("create response", responseCreate.data._id);
+        const responsePatch = await axios.patch(
+          `${import.meta.env.VITE_API_URL}/menus/update-menu/${
+            responseCreate.data._id
+          }`,
+          { dishes: JSON.parse(dishes) }
+        );
+        console.log("patch response", responsePatch.data);
+        setCurrentMenu(responsePatch.data);
+        nav(`/results/${responsePatch.data._id}`);
+      } catch (err) {
+        console.log(err);
+      }
     }
-   }
   }
-  
+
   //* Handle google Gemini Translation
 
   const ai = new GoogleGenAI({
@@ -134,6 +150,20 @@ const MenuContextWrapper = ({ children }) => {
     return response.text;
   }
 
+  //* Get One Menu
+
+  async function handleGetOneMenu(oneMenuId) {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/menus/one-menu/${oneMenuId}`
+      );
+      console.log("one menu", res);
+      setCurrentMenu(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <MenuContext.Provider
       value={{
@@ -142,6 +172,7 @@ const MenuContextWrapper = ({ children }) => {
         isLoading,
         handleCreateMenu,
         handleCreateRestaurant,
+        handleGetOneMenu,
       }}
     >
       {children}
