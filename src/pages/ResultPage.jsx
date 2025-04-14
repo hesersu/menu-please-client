@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Separator } from "@/components/ui/separator";
@@ -6,16 +6,17 @@ import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
 import { MenuContext } from "@/contexts/menuContext";
+import { SpeechContext } from "@/contexts/speechContext";
 import { Button } from "@/components/ui/button";
 import { CupSoda, SpeakerIcon } from "lucide-react";
-import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 
 const ResultPage = () => {
-  // Get menuId
   const { menuId } = useParams();
   const { handleGetOneMenu, currentMenu, handleDeleteMenu } =
     useContext(MenuContext);
+  const { googleTextToSpeech } = useContext(SpeechContext);
   const nav = useNavigate();
+  const [language, setLanguage] = useState("");
 
   // Get One Menu
 
@@ -54,7 +55,16 @@ const ResultPage = () => {
                     </p>
                   </div>
                   <div>
-                    <Button variant="outline" className="ml-3">
+                    <Button
+                      onClick={() =>
+                        googleTextToSpeech(
+                          oneItem.nameOriginal,
+                          currentMenu.language
+                        )
+                      }
+                      variant="outline"
+                      className="ml-3"
+                    >
                       <SpeakerIcon />
                     </Button>
                   </div>
