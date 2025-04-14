@@ -40,8 +40,8 @@ export const Navbar = ({
   },
 
   menu = [
-    { title: `Add Menu`, url: "#" },
-    { title: "History", url: "#" },
+    { title: `Add Menu`, url: "/translate-menu" },
+    { title: "History", url: "/menu-history" },
     { title: "Settings", url: "#" },
   ],
 
