@@ -110,9 +110,9 @@ export const Navbar = ({
               </SheetTrigger>
               <SheetContent className="overflow-y-auto">
                 <SheetHeader>
-                  <SheetTitle className="font-light text-sm">Menu</SheetTitle>
+                  <SheetTitle className="font-light text-sm"></SheetTitle>
                   <div className="flex flex-row align-center mb-5">
-                    <Avatar className="h-12 w-12 mr-5 mt-5">
+                    <Avatar className="h-12 w-12 mr-5 mt-8">
                       <AvatarImage
                         src="https://github.com/shadcn.png"
                         alt="@shadcn"
@@ -121,7 +121,7 @@ export const Navbar = ({
                         {currentUser && currentUser.username.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
-                    <SheetDescription className="h-12 mr-5 mt-5 font-normal text-3xl text-white content-center">
+                    <SheetDescription className="h-12 mr-5 mt-8 font-normal text-1xl text-white content-center">
                       Welcome, {currentUser && currentUser.username}!
                     </SheetDescription>
                   </div>
@@ -155,7 +155,6 @@ export const Navbar = ({
                         </Button>
                       </Link>
                     )}
-                    np{" "}
                   </div>
                 </div>
               </SheetContent>
