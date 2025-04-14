@@ -3,6 +3,7 @@ import { MenuContext } from '@/contexts/menuContext'
 import React, { useState } from 'react'
 import { useContext, useEffect} from 'react'
 
+
 // Shadcn components
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -66,7 +67,6 @@ export const MenuHistoryPage = () => {
         }
       }
       }, [sorter, allMenusOneUser]);
-  
 
   return (
     <>
@@ -130,5 +130,3 @@ export const MenuHistoryPage = () => {
   </>
   )
 }
-
-
