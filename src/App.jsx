@@ -8,6 +8,7 @@ import { TranslateMenuPage } from "./pages/TranslateMenuPage";
 import { MenuHistoryPage } from "./pages/MenuHistoryPage";
 import ResultPage from "./pages/ResultPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { OrderMenuPage } from "./pages/OrderMenuPage";
 
 function App() {
   return (
@@ -45,6 +46,14 @@ function App() {
           element={
             <ProtectedRoute>
               <ResultPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/order-menu"
+          element={
+            <ProtectedRoute>
+              <OrderMenuPage/>
             </ProtectedRoute>
           }
         />
