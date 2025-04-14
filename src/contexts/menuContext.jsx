@@ -181,6 +181,20 @@ const MenuContextWrapper = ({ children }) => {
     }
   }
 
+  //* Delete One Menu
+
+  async function handleDeleteMenu(oneMenuId) {
+    try {
+      const res = await axios.delete(
+        `${import.meta.env.VITE_API_URL}/menus/delete-menu/${oneMenuId}`
+      );
+      console.log("Menu removed", res);
+      nav("/menu-history");
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   return (
     <MenuContext.Provider
       value={{
@@ -188,6 +202,7 @@ const MenuContextWrapper = ({ children }) => {
         setCurrentMenu,
         isLoading,
         handleCreateMenu,
+        handleDeleteMenu,
         handleCreateRestaurant,
         getAllMenusForOneUser,
         allMenusOneUser,

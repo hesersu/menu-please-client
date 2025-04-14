@@ -3,14 +3,19 @@ import React, { useContext, useEffect, useState } from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Separator } from "@/components/ui/separator";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 import { MenuContext } from "@/contexts/menuContext";
 import { Button } from "@/components/ui/button";
 import { CupSoda, SpeakerIcon } from "lucide-react";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
 
 const ResultPage = () => {
   // Get menuId
   const { menuId } = useParams();
-  const { handleGetOneMenu, currentMenu } = useContext(MenuContext);
+  const { handleGetOneMenu, currentMenu, handleDeleteMenu } =
+    useContext(MenuContext);
+  const nav = useNavigate();
 
   // Get One Menu
 
@@ -49,7 +54,7 @@ const ResultPage = () => {
                     </p>
                   </div>
                   <div>
-                    <Button variant="default" className="ml-3">
+                    <Button variant="outline" className="ml-3">
                       <SpeakerIcon />
                     </Button>
                   </div>
@@ -58,6 +63,26 @@ const ResultPage = () => {
               </div>
             );
           })}
+      </div>
+      <div className="flex flex-row justify-center">
+        <div className="w-6/12 flex justify-center">
+          <Button
+            onClick={() => nav("/menu-history")}
+            variant="default"
+            className="my-6 w-10/12"
+          >
+            View all menus
+          </Button>
+        </div>
+        <div className="w-6/12 flex justify-center">
+          <Button
+            onClick={() => handleDeleteMenu(menuId)}
+            variant="destructive"
+            className="my-6 w-10/12"
+          >
+            Delete menu
+          </Button>
+        </div>
       </div>
     </div>
   );
