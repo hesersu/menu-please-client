@@ -5,14 +5,17 @@ import App from "./App.jsx";
 import { BrowserRouter as Browser } from "react-router-dom";
 import { AuthContextWrapper } from "./contexts/authContext";
 import { MenuContextWrapper } from "./contexts/menuContext";
+import { SpeechContextWrapper } from "./contexts/speechContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Browser>
       <AuthContextWrapper>
-        <MenuContextWrapper>
-          <App />
-        </MenuContextWrapper>
+        <SpeechContextWrapper>
+          <MenuContextWrapper>
+            <App />
+          </MenuContextWrapper>
+        </SpeechContextWrapper>
       </AuthContextWrapper>
     </Browser>
   </StrictMode>
