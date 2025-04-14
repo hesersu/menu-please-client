@@ -14,9 +14,9 @@ const MenuContextWrapper = ({ children }) => {
   const [currentMenu, setCurrentMenu] = useState(null);
   const [currentRestaurantId, setCurrentRestaurantId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const {currentUser} = useContext(AuthContext);
+  const { currentUser } = useContext(AuthContext);
   const [allMenusOneUser, setAllMenusOneUser] = useState(null);
-  const [allMenusOneUserLoading, setAllMenusOneUserLoading] = useState(true)
+  const [allMenusOneUserLoading, setAllMenusOneUserLoading] = useState(true);
   const nav = useNavigate();
 
   useEffect(() => {
@@ -73,7 +73,6 @@ const MenuContextWrapper = ({ children }) => {
           { dishes: JSON.parse(dishes) }
         );
         console.log("patch response", responsePatch.data);
-        setCurrentMenu(responsePatch.data);
         nav(`/results/${responsePatch.data._id}`);
       } catch (err) {
         console.log(err);
@@ -154,14 +153,21 @@ const MenuContextWrapper = ({ children }) => {
 
   //* Get All Menus for One User
 
-  async function getAllMenusForOneUser(){
-    try{
-    const allMenusforOneUser = await axios.get(`${import.meta.env.VITE_API_URL}/menus/all-menus-one-user?ownerId=${currentUser._id}`)
-    console.log(allMenusforOneUser.data)
-    setAllMenusOneUser(allMenusforOneUser.data)
-    setAllMenusOneUserLoading(false);
-  } catch(err){console.log(err)}
-  
+  async function getAllMenusForOneUser() {
+    try {
+      const allMenusforOneUser = await axios.get(
+        `${import.meta.env.VITE_API_URL}/menus/all-menus-one-user?ownerId=${
+          currentUser._id
+        }`
+      );
+      console.log(allMenusforOneUser.data);
+      setAllMenusOneUser(allMenusforOneUser.data);
+      setAllMenusOneUserLoading(false);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   //* Get One Menu
 
   async function handleGetOneMenu(oneMenuId) {
@@ -169,8 +175,7 @@ const MenuContextWrapper = ({ children }) => {
       const res = await axios.get(
         `${import.meta.env.VITE_API_URL}/menus/one-menu/${oneMenuId}`
       );
-      console.log("one menu", res);
-      setCurrentMenu(res.data);
+      setCurrentMenu(res.data.oneMenu);
     } catch (err) {
       console.log(err);
     }
@@ -186,7 +191,7 @@ const MenuContextWrapper = ({ children }) => {
         handleCreateRestaurant,
         getAllMenusForOneUser,
         allMenusOneUser,
-        allMenusOneUserLoading
+        allMenusOneUserLoading,
         handleGetOneMenu,
       }}
     >
