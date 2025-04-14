@@ -156,12 +156,12 @@ const MenuContextWrapper = ({ children }) => {
 
   async function getAllMenusForOneUser(){
     try{
-    const allMenusforOneUser = await axios.get(`${import.meta.env.VITE_API_URL}/menus/all-menus-one-user?ownerId=${currentUser._id}`)
-    console.log(allMenusforOneUser.data)
-    setAllMenusOneUser(allMenusforOneUser.data)
+    const res = await axios.get(`${import.meta.env.VITE_API_URL}/menus/all-menus-one-user?ownerId=${currentUser._id}`)
+    console.log(res.data.allMenusForOneUser)
+    setAllMenusOneUser(res.data.allMenusForOneUser)
     setAllMenusOneUserLoading(false);
   } catch(err){console.log(err)}
-  
+}
   //* Get One Menu
 
   async function handleGetOneMenu(oneMenuId) {
@@ -186,7 +186,7 @@ const MenuContextWrapper = ({ children }) => {
         handleCreateRestaurant,
         getAllMenusForOneUser,
         allMenusOneUser,
-        allMenusOneUserLoading
+        allMenusOneUserLoading,
         handleGetOneMenu,
       }}
     >

@@ -8,6 +8,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import axios from "axios";
@@ -78,22 +87,28 @@ export const TranslateMenuPage = () => {
               <label htmlFor="select-language">
                 Please select menu language
               </label>
-              <select
-                id="select-language"
-                className="block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-              >
-                <option value="">Select Language</option>
-                <option value="Chinese">Chinese</option>
-                <option value="Korean">Korean</option>
-                <option value="Japanese">Japanese</option>
-              </select>
-            </div>
 
-            <div className="grid gap-3">
+              <Select
+                value={language}
+                onValueChange={setLanguage}
+              >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select a langauge" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Language</SelectLabel>
+                  <SelectItem value="Chinese">Chinese</SelectItem>
+                  <SelectItem value="Korean">Korean</SelectItem>
+                  <SelectItem value="Japanese">Japanese</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+            
+            </div>
+            <div className="grid w-full max-w-sm items-center gap-1.5">
               <label htmlFor="upload">Select Picture</label>
-              <input
+              <Input
                 id="upload"
                 type="file"
                 accept="image/"
