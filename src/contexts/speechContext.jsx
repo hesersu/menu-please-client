@@ -7,12 +7,6 @@ const SpeechContext = createContext();
 
 const SpeechContextWrapper = ({ children }) => {
 
-  // Controlled Variables
-  const [fromLang, setFromLang] = useState("en");
-  const [toLang, setToLang] = useState("zh-CN");
-  const [translated, setTranslated] = useState("");
-
-
   // Synthesize Speech
   async function googleTextToSpeech(text, language) {
     console.log(text, language);
