@@ -17,6 +17,7 @@ const MenuContextWrapper = ({ children }) => {
   const { currentUser } = useContext(AuthContext);
   const [allMenusOneUser, setAllMenusOneUser] = useState(null);
   const [allMenusOneUserLoading, setAllMenusOneUserLoading] = useState(true);
+  const [currentOrderMenu, setCurrentOrderMenu] = useState("")
   const nav = useNavigate();
 
   useEffect(() => {
@@ -176,8 +177,13 @@ const MenuContextWrapper = ({ children }) => {
                 description:
                   "Restaurant order pronunciation so that a customer can communicate to the waiter. Example: Nǐ hǎo, wǒ xiǎng diǎn liǎng fèn gōng bǎo jī dīng",
               },
+              orderTranslation: {
+                type: "string",
+                description:
+                  "Restaurant order translated in English, pay attention that the menu items are translated properly",
+              },
             },
-            required: ["orderOriginal", "orderPronunciation"],
+            required: ["orderOriginal", "orderPronunciation", "orderTranslation"],
           },
         },
       },
@@ -185,6 +191,10 @@ const MenuContextWrapper = ({ children }) => {
 
     const chineseText = await response.text;
     console.log("Waiter-friendly order:", chineseText);
+    //transform text into array
+    const parsedArray = JSON.parse(chineseText); 
+    console.log(parsedArray)
+    setCurrentOrderMenu(parsedArray);
     return chineseText;
   }
 
@@ -246,6 +256,7 @@ const MenuContextWrapper = ({ children }) => {
         allMenusOneUserLoading,
         handleGetOneMenu,
         createOrderMenu,
+        currentOrderMenu
       }}
     >
       {children}

@@ -155,6 +155,7 @@ const ResultPage = () => {
               console.log("Order items:", orderArray);
               // Send to API or handle as needed
               createOrderMenu(orderArray, currentMenu.language);
+              nav(`/order-menu/${menuId}`)
             }}
             variant="default"
             className="my-6 w-10/12"

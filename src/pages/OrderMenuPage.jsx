@@ -10,11 +10,21 @@ import { useRef } from 'react'
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { useParams } from 'react-router-dom'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export const OrderMenuPage = () => {
 
 const {createOrderMenu} = useContext(MenuContext);
-const { translateText } = useContext(SpeechContext);
+const { translateText, googleTextToSpeech } = useContext(SpeechContext);
+const {currentMenu, currentOrderMenu, handleGetOneMenu} = useContext(MenuContext);
 const [fromLang, setFromLang] = useState("en");
 const [toLang, setToLang] = useState("zh-CN");
 const [transcript, setTranscript] = useState("");
@@ -24,23 +34,37 @@ const recognitionRef = useRef(null);
 const isStoppingRef = useRef(false); // Track if we’re already stopping
 const [speakerRole, setSpeakerRole] = useState(null); // "customer" or "waiter"
 const [conversation, setConversation] = useState([]);
-//only for testing, afterwards need to adjust
-const tags = Array.from({ length: 1 }).map(
-  (_, i, a) => `v1.2.0-beta.${a.length - i}`
-)
-
+const {menuId} = useParams()
 
 
 useEffect(()=>{
-//create menu order from selected menu items in ResultPage
+
 async function loadOrderMenu(){
-const responseOrderMenu = await createOrderMenu();
-console.log(responseOrderMenu)
 //Clear the conversation array when loading the page
-setConversation([]);
+
+setConversation([{
+  role: "Customer",
+  toLang: "Chinese",
+  original: currentOrderMenu[0].orderTranslation,
+  translated: currentOrderMenu[0].orderOriginal
+}]);
+//set languages for translation
+handleGetOneMenu(menuId);
+const languageFromCurrentMenu = currentMenu.language
+
+console.log(languageFromCurrentMenu)
+const languageMap = {
+  "English": "en",
+  "Chinese": "zh-CN",
+  "Japanese": "ja",
+  "Korean": "ko",
+};
+const languageCode = languageMap[languageFromCurrentMenu]
+setToLang(languageCode)
+console.log("this is the current language code for target", languageCode)
 }
 loadOrderMenu()
-},[])
+},[currentOrderMenu])
 
 // Start Recording Function
 const startRecording = (sourceLang, targetLang) => {
@@ -71,6 +95,7 @@ const startRecording = (sourceLang, targetLang) => {
       ...prev,
       {
         role,
+        toLang,
         original: spokenText,
         translated: result
       }
@@ -123,54 +148,62 @@ const handleToggleRecording = (role) => {
   }
 };
 
+function handlePlayAudio(translation, language) {
+googleTextToSpeech(translation, language)
+}
+
 return (
 <div>
-  <h2>🎙️ Live Voice Translator</h2>
-
-  <div style={{ marginTop: "1rem" }}>
-    <strong>You said:</strong> {transcript}
-    <br />
-    <strong>Translated:</strong> {translated}
-  </div>
-
-  <ScrollArea className="h-72 w-full rounded-md border">
+  <h2 className="mx-6 mb-5">🎙️ Live Voice Translator</h2>
+   <div className='mx-6 mb-5'>
+  <ScrollArea className="h-120 w-full rounded-md border">
       <div className="p-4">
         <h4 className="mb-4 text-sm font-medium leading-none">Conversation</h4>
-        {[...conversation].reverse().map((oneText, index) => (
-          <>
-            <div key={index} className="text-sm">
-              <div className = "flex row justify-between col-2">
-                <div>{oneText.role}:&nbsp;{oneText.original}</div>
-                <Button>Play audio</Button>
-              </div>
-            </div>
-            <Separator className="my-2" />
-          </>
-        ))}
+          {[...conversation].reverse().map((oneText, index) => (
+              <Dialog key={index}>
+                <DialogTrigger>
+                  <div className="text-sm">{oneText.role}:&nbsp;{oneText.original}</div>                  
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Translated Order</DialogTitle>
+                    <DialogDescription className="flex flex-col gap-5">
+                     {oneText.translated}
+                     <Button onClick={()=>{handlePlayAudio(
+                    oneText.translated,
+                    oneText.role === "Customer" ? toLang : fromLang)}}>Play audio</Button>
+                    </DialogDescription>
+                  </DialogHeader>
+                </DialogContent>
+                <Separator className="my-2" />
+              </Dialog>
+          ))}
       </div>
     </ScrollArea>
+    </div>
 
 
-  <div className="flex flex-col gap-3">
-  <Button
-  onClick={() => {
-    setSpeakerRole("customer");
-    handleToggleRecording("customer");
-  }}
-  disabled={isRecording && speakerRole !== "customer"}
->
-  {isRecording && speakerRole === "customer" ? "🛑 Stop Customer Recording" : "🎤 Start Customer Recording"}
-</Button>
+  <div className="flex flex-col gap-5 mx-6">
+    <Button
+  
+    onClick={() => {
+      setSpeakerRole("customer");
+      handleToggleRecording("customer");
+    }}
+    disabled={isRecording && speakerRole !== "customer"}
+  >
+    {isRecording && speakerRole === "customer" ? "🛑 Stop Customer Recording" : "🎤 Start Customer Recording"}
+  </Button>
 
-<Button 
-  onClick={() => {
-    setSpeakerRole("waiter");
-    handleToggleRecording("waiter");
-  }}
-  disabled={isRecording && speakerRole !== "waiter"}
->
-  {isRecording && speakerRole === "waiter" ? "🛑 Stop Waiter Recording" : "🎤 Start Waiter Recording"}
-</Button>
+  <Button 
+    onClick={() => {
+      setSpeakerRole("waiter");
+      handleToggleRecording("waiter");
+    }}
+    disabled={isRecording && speakerRole !== "waiter"}
+  >
+    {isRecording && speakerRole === "waiter" ? "🛑 Stop Waiter Recording" : "🎤 Start Waiter Recording"}
+  </Button>
 </div>
 </div>
 );
