@@ -50,7 +50,7 @@ function App() {
           }
         />
         <Route
-          path="/order-menu"
+          path="/order-menu/:menuId"
           element={
             <ProtectedRoute>
               <OrderMenuPage/>

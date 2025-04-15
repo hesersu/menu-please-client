@@ -19,7 +19,7 @@ const SpeechContextWrapper = ({ children }) => {
 
       let data;
 
-      if (language === "Chinese") {
+      if (language === "Chinese" || language === "zh-CN" ) {
         data = {
           input: {
             text: text,
@@ -33,7 +33,7 @@ const SpeechContextWrapper = ({ children }) => {
             audioEncoding: "MP3",
           },
         };
-      } else if (language === "Korean") {
+      } else if (language === "Korean" || language === "ko" ) {
         data = {
           input: {
             text: text,
@@ -47,7 +47,7 @@ const SpeechContextWrapper = ({ children }) => {
             audioEncoding: "MP3",
           },
         };
-      } else if (language === "Japanese") {
+      } else if (language === "Japanese" || language === "ja" ) {
         data = {
           input: {
             text: text,
@@ -63,7 +63,7 @@ const SpeechContextWrapper = ({ children }) => {
         };
       }
 
-      else if (language === "English") {
+      else if (language === "English" || language === "en" ) {
         data = {
           input: {
             text: text,
@@ -118,7 +118,7 @@ const SpeechContextWrapper = ({ children }) => {
     }
   }
 // Traslate transcribed text 
-const translateText = async (text, fromLang = "en", toLang = "zh-CN") => {
+const translateText = async (text, fromLang, toLang) => {
   try {
     const apiKey = import.meta.env.VITE_GOOGLESTTS_API;
     const response = await axios.post(
@@ -137,7 +137,7 @@ const translateText = async (text, fromLang = "en", toLang = "zh-CN") => {
     );
 
     const translated = response.data.data.translations[0].translatedText;
-    googleTextToSpeech(translated, toLang)
+    // googleTextToSpeech(translated, toLang)
     // speak(translated, toLang);
     return translated;
   } catch (error) {
@@ -158,7 +158,6 @@ const translateText = async (text, fromLang = "en", toLang = "zh-CN") => {
       value={{
         googleTextToSpeech,
         translateText,
-        speak
       }}
     >
       {children}
