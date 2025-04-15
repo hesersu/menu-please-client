@@ -40,7 +40,6 @@ const MenuContextWrapper = ({ children }) => {
     }
   }
 
-
   //* Handle create menu
 
   async function handleCreateMenu(event, formMenuData) {
@@ -81,7 +80,6 @@ const MenuContextWrapper = ({ children }) => {
     }
   }
 
-  
   //* Handle google Gemini Translation
 
   const ai = new GoogleGenAI({
@@ -96,7 +94,7 @@ const MenuContextWrapper = ({ children }) => {
       model: "gemini-2.0-flash",
       contents: [
         createUserContent([
-          "Tell me about this instrument",
+          "Help me translate a menu",
           createPartFromUri(image.uri, image.mimeType),
         ]),
       ],
@@ -153,35 +151,38 @@ const MenuContextWrapper = ({ children }) => {
     return response.text;
   }
 
- //get gemini menu order in target language
- //ToDos langugage from menu context and pinyin in addtion two button for communicating with waiter
-  const order = [
-    { item: "燒餅油條", count: 2 },
-    { item: "宫保鸡丁", count: 1 }
-  ];
-  
-  function createOrderPrompt(order, language) {
-    const orderList = order.map(oneItem => `${oneItem.count} x ${oneItem.item}`).join(", ");
-    return `Please generate a natural-sounding, waiter-friendly restaurant order in ${language} with a polite greeting. Here is the order: ${orderList}`;
-  }
-  
-  async function createOrderMenu() {
+  async function createOrderMenu(order, language) {
     const response = await ai.models.generateContent({
       model: "gemini-2.0-flash",
-      contents: [
-        createUserContent([createOrderPrompt(order, "Chinese")])
-      ],
-      config:
-      {
-        systemInstruction: "You help a customer formulating an order for the waiter",
+      contents: `Please generate a natural-sounding, waiter-friendly restaurant order in ${language} with a polite greeting. Here is the order as an array: ${JSON.stringify(
+        order
+      )}`,
+      config: {
+        systemInstruction:
+          "You help a customer formulating an order for the waiter",
         responseMimeType: "application/json",
-        responseSchema:{
-        type: "string",
-        description: "Restaurant order in target lanuage (see prompt) that a customer can communicate to the waiter. Example: 你好，我想点两份宫保鸡丁"       
-        }
+        responseSchema: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              orderOriginal: {
+                type: "string",
+                description:
+                  "Restaurant order in target language (see prompt) that a customer can communicate to the waiter. Example: 你好，我想点两份宫保鸡丁",
+              },
+              orderPronunciation: {
+                type: "string",
+                description:
+                  "Restaurant order pronunciation so that a customer can communicate to the waiter. Example: Nǐ hǎo, wǒ xiǎng diǎn liǎng fèn gōng bǎo jī dīng",
+              },
+            },
+            required: ["orderOriginal", "orderPronunciation"],
+          },
+        },
       },
     });
-  
+
     const chineseText = await response.text;
     console.log("Waiter-friendly order:", chineseText);
     return chineseText;
@@ -189,14 +190,20 @@ const MenuContextWrapper = ({ children }) => {
 
   //* Get All Menus for One User
 
-  async function getAllMenusForOneUser(){
-    try{
-    const res = await axios.get(`${import.meta.env.VITE_API_URL}/menus/all-menus-one-user?ownerId=${currentUser._id}`)
-    console.log(res.data.allMenusForOneUser)
-    setAllMenusOneUser(res.data.allMenusForOneUser)
-    setAllMenusOneUserLoading(false);
-  } catch(err){console.log(err)}
-}
+  async function getAllMenusForOneUser() {
+    try {
+      const res = await axios.get(
+        `${import.meta.env.VITE_API_URL}/menus/all-menus-one-user?ownerId=${
+          currentUser._id
+        }`
+      );
+      console.log(res.data.allMenusForOneUser);
+      setAllMenusOneUser(res.data.allMenusForOneUser);
+      setAllMenusOneUserLoading(false);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   //* Get One Menu
 
@@ -238,7 +245,7 @@ const MenuContextWrapper = ({ children }) => {
         allMenusOneUser,
         allMenusOneUserLoading,
         handleGetOneMenu,
-        createOrderMenu
+        createOrderMenu,
       }}
     >
       {children}

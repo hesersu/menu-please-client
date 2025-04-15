@@ -114,8 +114,8 @@ export const Navbar = ({
                   <div className="flex flex-row align-center mb-5">
                     <Avatar className="h-12 w-12 mr-5 mt-8">
                       <AvatarImage
-                        src="https://github.com/shadcn.png"
-                        alt="@shadcn"
+                        src={currentUser && currentUser.profileImage}
+                        alt={currentUser && currentUser.username}
                       />
                       <AvatarFallback>
                         {currentUser && currentUser.username.charAt(0)}
