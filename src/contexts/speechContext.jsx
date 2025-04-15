@@ -63,6 +63,22 @@ const SpeechContextWrapper = ({ children }) => {
         };
       }
 
+      else if (language === "English") {
+        data = {
+          input: {
+            text: text,
+          },
+          voice: {
+            languageCode: "en-US",
+            name: "en-US-Chirp3-HD-Aoede",
+            ssmlGender: "FEMALE",
+          },
+          audioConfig: {
+            audioEncoding: "MP3",
+          },
+        };
+      }
+
       //   const data = {
       //     input: {
       //       text: text,
@@ -121,7 +137,8 @@ const translateText = async (text, fromLang = "en", toLang = "zh-CN") => {
     );
 
     const translated = response.data.data.translations[0].translatedText;
-    speak(translated, toLang);
+    googleTextToSpeech(translated, toLang)
+    // speak(translated, toLang);
     return translated;
   } catch (error) {
     console.error("Translation error:", error);
@@ -129,11 +146,12 @@ const translateText = async (text, fromLang = "en", toLang = "zh-CN") => {
   }
 };
 
-const speak = (text, lang = "zh-CN") => {
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = lang;
-  speechSynthesis.speak(utterance);
-};
+
+// const speak = (text, toLang = "zh-CN") => {
+//   const utterance = new SpeechSynthesisUtterance(text);
+//   utterance.lang = lang;
+//   speechSynthesis.speak(utterance);
+// };
 
   return (
     <SpeechContext.Provider
