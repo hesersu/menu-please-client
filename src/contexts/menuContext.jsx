@@ -154,6 +154,7 @@ const MenuContextWrapper = ({ children }) => {
   }
 
  //get gemini menu order in target language
+ //ToDos langugage from menu context and pinyin in addtion two button for communicating with waiter
   const order = [
     { item: "燒餅油條", count: 2 },
     { item: "宫保鸡丁", count: 1 }

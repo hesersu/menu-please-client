@@ -1,9 +1,18 @@
 import React from "react";
 import { createContext } from "react";
+import { useState } from "react";
+import axios from "axios";
 
 const SpeechContext = createContext();
 
 const SpeechContextWrapper = ({ children }) => {
+
+  // Controlled Variables
+  const [fromLang, setFromLang] = useState("en");
+  const [toLang, setToLang] = useState("zh-CN");
+  const [translated, setTranslated] = useState("");
+
+
   // Synthesize Speech
   async function googleTextToSpeech(text, language) {
     console.log(text, language);
@@ -98,11 +107,46 @@ const SpeechContextWrapper = ({ children }) => {
       throw new Error(error);
     }
   }
+// Traslate transcribed text 
+const translateText = async (text, fromLang = "en", toLang = "zh-CN") => {
+  try {
+    const apiKey = import.meta.env.VITE_GOOGLESTTS_API;
+    const response = await axios.post(
+      `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
+      {
+        q: text,
+        source: fromLang,
+        target: toLang,
+        format: "text",
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    const translated = response.data.data.translations[0].translatedText;
+    speak(translated, toLang);
+    return translated;
+  } catch (error) {
+    console.error("Translation error:", error);
+    return "";
+  }
+};
+
+const speak = (text, lang = "zh-CN") => {
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = lang;
+  speechSynthesis.speak(utterance);
+};
 
   return (
     <SpeechContext.Provider
       value={{
         googleTextToSpeech,
+        translateText,
+        speak
       }}
     >
       {children}
