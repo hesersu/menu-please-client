@@ -24,6 +24,41 @@ const MenuContextWrapper = ({ children }) => {
     console.log("currentMenu changed:", currentMenu);
   }, [currentMenu]);
 
+  //* Upload File Workaround
+
+  async function uploadFile(file) {
+    // Create a new FormData object
+    const formData = new FormData();
+    const apiKey = import.meta.env.VITE_GEMINI_API;
+
+    // Append the file to FormData with the correct field name
+    formData.append("file", file);
+
+    try {
+      // Make the POST request to upload the file
+      const response = await axios.post(
+        `https://generativelanguage.googleapis.com/upload/v1beta/files?key=${apiKey}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            // No Authorization header needed if using API key in URL
+          },
+        }
+      );
+
+      // Log the response
+      console.log("File uploaded successfully:", response.data);
+      return response.data; // Return the response data which should contain the file ID
+    } catch (error) {
+      console.error(
+        "Error uploading file:",
+        error.response ? error.response.data : error.message
+      );
+      throw error; // Re-throw the error to handle it in the calling function
+    }
+  }
+
   //* Handle create restaurant
 
   async function handleCreateRestaurant(name, location) {
@@ -46,6 +81,7 @@ const MenuContextWrapper = ({ children }) => {
   async function handleCreateMenu(event, formMenuData) {
     event.preventDefault();
     //Use Form Data because it is not only JSON, but mixed files incl. Image
+    const uploadedFile = await uploadFile(formMenuData.file);
     const dishes = await handleGeminiTranslation(formMenuData.file);
     console.log("dishes", typeof dishes);
     const restaurant_id = await handleCreateRestaurant(
