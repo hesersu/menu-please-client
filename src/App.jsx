@@ -9,6 +9,8 @@ import { MenuHistoryPage } from "./pages/MenuHistoryPage";
 import ResultPage from "./pages/ResultPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { OrderMenuPage } from "./pages/OrderMenuPage";
+import { Toaster } from "sonner";
+
 import { ThemeProvider } from "@/components/theme-provider";
 import { NotFoundPage } from "./pages/NotFoundPage";
 
@@ -62,6 +64,7 @@ function App() {
           />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        <Toaster position="top-center" richColors />
       </>
     </ThemeProvider>
   );

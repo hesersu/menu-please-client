@@ -10,10 +10,8 @@ import { LoginForm } from "@/components/login-form";
 export const LoginPage = () => {
   // Content of the Page
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
+    <div className="flex flex-col items-center justify-start min-h-screen px-6 md:px-10">
         <LoginForm />
-      </div>
     </div>
   );
 };
