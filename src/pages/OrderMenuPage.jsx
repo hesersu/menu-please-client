@@ -5,6 +5,7 @@ import { useContext } from "react";
 import { useState } from "react";
 import { useRef } from "react";
 
+
 //UI Components
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -18,6 +19,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Play } from 'lucide-react';
+import { Mic } from 'lucide-react';
+import { AudioLines } from 'lucide-react';
+import { CircleStop } from 'lucide-react';
 
 export const OrderMenuPage = () => {
   const { createOrderMenu } = useContext(MenuContext);
@@ -66,7 +71,7 @@ export const OrderMenuPage = () => {
   }, [currentOrderMenu]);
 
   // Start Recording Function
-  const startRecording = (sourceLang, targetLang) => {
+  const startRecording = (sourceLang, targetLang, role) => {
     if (isRecording || recognitionRef.current) return;
 
     const SpeechRecognition =
@@ -90,11 +95,10 @@ export const OrderMenuPage = () => {
       setTranslated(result);
 
       //Determin role of speaker then append to conversation array
-      const role = speakerRole === "customer" ? "Customer" : "Waiter";
       setConversation((prev) => [
         ...prev,
         {
-          role,
+          role: role === "customer" ? "Customer" : "Waiter",
           toLang,
           original: spokenText,
           translated: result,
@@ -116,8 +120,10 @@ export const OrderMenuPage = () => {
 
     recognitionRef.current = recognition;
     recognition.start();
-    setIsRecording(true);
-  };
+    setTimeout(() => {
+      setIsRecording(true);
+    }, 500);
+  }
 
   // stop Recording Function
   const stopRecording = () => {
@@ -143,7 +149,7 @@ export const OrderMenuPage = () => {
     } else {
       const source = role === "customer" ? fromLang : toLang;
       const target = role === "customer" ? toLang : fromLang;
-      startRecording(source, target);
+      startRecording(source, target, role);
     }
   };
 
@@ -161,61 +167,97 @@ export const OrderMenuPage = () => {
               Conversation
             </h4>
             {[...conversation].reverse().map((oneText, index) => (
-              <Dialog key={index}>
-                <DialogTrigger>
-                  <div className="text-sm">
-                    {oneText.role}:&nbsp;{oneText.original}
-                  </div>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Translated Order</DialogTitle>
-                    <DialogDescription className="flex flex-col gap-5">
-                      {oneText.translated}
-                      <Button
-                        onClick={() => {
-                          handlePlayAudio(
-                            oneText.translated,
-                            oneText.role === "Customer" ? toLang : fromLang
-                          );
-                        }}
-                      >
-                        Play audio
-                      </Button>
-                    </DialogDescription>
-                  </DialogHeader>
-                </DialogContent>
-                <Separator className="my-2" />
-              </Dialog>
+              <div
+              key={index}
+              className={`flex ${
+                oneText.role === "Customer" ? "justify-start" : "justify-end"
+              } mb-3`}
+            >
+              <div
+                className={`max-w-xs p-4 rounded-lg shadow-sm ${
+                  oneText.role === "Customer"
+                    ? "w-4/5 bg-muted text-left rounded-bl-none"
+                    : "w-4/5 bg-card text-black text-right rounded-br-none"
+                }`}
+              >
+                <div className="text-sm font-semibold mb-1">{oneText.role}</div>
+            
+                {/* Message content depending on role */}
+                {oneText.role === "Customer" ? (
+                  <>
+                    <div>{oneText.original}</div>
+                    <div className="text-muted-foreground text-sm mt-1">{oneText.translated}</div>
+                  </>
+                ) : (
+                  <>
+                    <div>{oneText.translated}</div>
+                    <div className="text-muted-foreground text-sm mt-1">{oneText.original}</div>
+                  </>
+                )}
+            
+                {/* Audio play button */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => {
+                    handlePlayAudio(
+                      oneText.translated,
+                      oneText.role === "Customer" ? toLang : fromLang
+                    );
+                  }}
+                >
+                  <Play/> Audio
+                </Button>
+              </div>
+            </div>
             ))}
           </div>
         </ScrollArea>
       </div>
 
-      <div className="flex flex-col gap-5 mx-6">
-        <Button
+      <div className="flex flex-row gap-4 mx-6 mt-10">
+      <Button
+          className="flex-1 h-20 whitespace-normal text-wrap flex flex-col items-center justify-center gap-1 text-center"
           onClick={() => {
             setSpeakerRole("customer");
             handleToggleRecording("customer");
           }}
           disabled={isRecording && speakerRole !== "customer"}
         >
-          {isRecording && speakerRole === "customer"
-            ? "🛑 Stop Customer Recording"
-            : "🎤 Start Customer Recording"}
-        </Button>
+          {isRecording && speakerRole === "customer" ? (
+            <>
+              <CircleStop className="w-6 h-6" />
+              <span className="text-xs sm:text-sm">Stop Customer Recording</span>
+            </>
+          ) : (
+            <>
+              <Mic className="w-6 h-6" />
+              <span className="text-xs sm:text-sm">Start Customer Recording</span>
+            </>
+          )}
+        </Button>   
 
         <Button
+          className="flex-1 h-20 whitespace-normal text-wrap flex flex-col items-center justify-center gap-1 text-center"
           onClick={() => {
             setSpeakerRole("waiter");
             handleToggleRecording("waiter");
           }}
           disabled={isRecording && speakerRole !== "waiter"}
         >
-          {isRecording && speakerRole === "waiter"
-            ? "🛑 Stop Waiter Recording"
-            : "🎤 Start Waiter Recording"}
-        </Button>
+          {isRecording && speakerRole === "waiter" ? (
+            <>
+              <CircleStop className="w-6 h-6" />
+              <span className="text-xs sm:text-sm">Stop Waiter Recording</span>
+            </>
+          ) : (
+            <>
+              <Mic className="w-6 h-6" />
+              <span className="text-xs sm:text-sm">Start Waiter <br/> Recording</span>
+            </>
+          )}
+        </Button>   
       </div>
     </div>
   );
