@@ -7,7 +7,6 @@ import LogoImage from "../assets/menu-please-logo.png";
 // Shadcn Components
 import { BookOpenText, CameraIcon, Menu } from "lucide-react";
 
-import { AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -30,7 +29,7 @@ export const Navbar = ({}) => {
     <section className="py-6 c">
       <div className="block mx-4">
         <div className="flex items-center justify-between">
-          <a href="/traslate-menu" className="flex items-center gap-2">
+          <a href="/translate-menu" className="flex items-center gap-2">
             <img
               src={LogoImage}
               className="max-h-12"
