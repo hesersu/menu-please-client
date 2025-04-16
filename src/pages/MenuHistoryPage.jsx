@@ -126,7 +126,7 @@ export const MenuHistoryPage = () => {
              </Button>
            </div>
     </Card>
-  </div>) : <h1>is loading</h1>}
+  </div>) : (<h1>is Loading</h1>)}
   </>
   )
 }

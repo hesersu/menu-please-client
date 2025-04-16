@@ -1,6 +1,8 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
+import { LoadingSpinner } from "@/components/loading-spinner";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
+import { AccordionItem } from "@radix-ui/react-accordion";
 import {
   Card,
   CardContent,
@@ -30,7 +32,14 @@ export const TranslateMenuPage = () => {
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState("");
   const [language, setLanguage] = useState("");
-  const { handleCreateMenu } = useContext(MenuContext);
+  const [isFormComplete, setIsFormComplete] = useState(false)
+  const { handleCreateMenu, isLoading} = useContext(MenuContext);
+
+  //check if the form has been filled out completely
+  useEffect(()=>{
+    setIsFormComplete (name.trim() !== "" && location.trim() !== "" && language !== "" && file !== null)
+  },[name, location, language, file])
+
 
   const handleImageChange = (e) => {
     const selectedImage = e.target.files[0];
@@ -133,7 +142,17 @@ export const TranslateMenuPage = () => {
                   />
                 )}
               </AspectRatio>
-              <Button>Show result</Button>
+              <Button
+              disabled={isLoading || !isFormComplete}>
+              {isLoading? (
+                <>
+                {/* Spinner */}
+                <LoadingSpinner/>
+                  Processing...
+                  </>
+              )
+              : ("See Result")}
+              </Button>
             </div>
           </form>
         </CardContent>
