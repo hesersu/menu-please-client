@@ -1,11 +1,6 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  GoogleGenAI,
-  createUserContent,
-  createPartFromUri,
-} from "@google/genai";
 import { AuthContext } from "./authContext";
 
 const MenuContext = createContext();
@@ -17,14 +12,15 @@ const MenuContextWrapper = ({ children }) => {
   const { currentUser } = useContext(AuthContext);
   const [allMenusOneUser, setAllMenusOneUser] = useState(null);
   const [allMenusOneUserLoading, setAllMenusOneUserLoading] = useState(true);
-  const [currentOrderMenu, setCurrentOrderMenu] = useState("")
+  const [currentOrderMenu, setCurrentOrderMenu] = useState("");
+  const [uploadedFileURI, SetUploadedFileURI] = useState({});
   const nav = useNavigate();
 
   useEffect(() => {
     console.log("currentMenu changed:", currentMenu);
   }, [currentMenu]);
 
-  //* Upload File Workaround
+  //* Upload File Function
 
   async function uploadFile(file) {
     // Create a new FormData object
@@ -49,6 +45,10 @@ const MenuContextWrapper = ({ children }) => {
 
       // Log the response
       console.log("File uploaded successfully:", response.data);
+      SetUploadedFileURI({
+        imageUri: response.data.file.uri,
+        mimeType: response.data.file.mimeType,
+      });
       return response.data; // Return the response data which should contain the file ID
     } catch (error) {
       console.error(
@@ -69,7 +69,6 @@ const MenuContextWrapper = ({ children }) => {
         restaurantObject
       );
       console.log("Restaurant Created", createdRestaurant.data._id);
-      setCurrentRestaurantId(createdRestaurant.data._id);
       return createdRestaurant.data._id;
     } catch (err) {
       console.log("Error creating restaurant", err);
@@ -82,7 +81,15 @@ const MenuContextWrapper = ({ children }) => {
     event.preventDefault();
     //Use Form Data because it is not only JSON, but mixed files incl. Image
     const uploadedFile = await uploadFile(formMenuData.file);
-    const dishes = await handleGeminiTranslation(formMenuData.file);
+    console.log(
+      "These are the file details",
+      uploadedFile.file.uri,
+      uploadedFile.file.mimeType
+    );
+    const dishes = await handleGeminiTranslation(
+      uploadedFile.file.uri,
+      uploadedFile.file.mimeType
+    );
     console.log("dishes", typeof dishes);
     const restaurant_id = await handleCreateRestaurant(
       formMenuData.name,
@@ -119,119 +126,41 @@ const MenuContextWrapper = ({ children }) => {
 
   //* Handle google Gemini Translation
 
-  const ai = new GoogleGenAI({
-    apiKey: import.meta.env.VITE_GEMINI_API,
-  });
-
-  async function handleGeminiTranslation(imageFile) {
-    const image = await ai.files.upload({
-      file: imageFile,
-    });
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: [
-        createUserContent([
-          "Help me translate a menu",
-          createPartFromUri(image.uri, image.mimeType),
-        ]),
-      ],
-      config: {
-        systemInstruction:
-          "You are a magical cat helping to translate restaurant menus. Your name is Neko.",
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              categoryOriginal: {
-                type: "string",
-                description: "Category name of the food in original language",
-              },
-              categoryEnglish: {
-                type: "string",
-                description:
-                  "Category name of the food translated in English language",
-              },
-              nameOriginal: {
-                type: "string",
-                description: "The name of the food item in original characters",
-              },
-              nameEnglish: {
-                type: "string",
-                description:
-                  "The name of the food item translated in English language",
-              },
-              phoneticPronunciation: {
-                type: "string",
-                description:
-                  "The phonetic pronunciation of the food name e.g. in chinese use pinyin",
-              },
-              descriptionEnglish: {
-                type: "string",
-                description: "A description of the food item in English",
-              },
-            },
-            required: [
-              "categoryOriginal",
-              "categoryEnglish",
-              "nameOriginal",
-              "nameEnglish",
-              "phoneticPronunciation",
-              "descriptionEnglish",
-            ],
-          },
-        },
-      },
-    });
-    console.log(response.text);
-    return response.text;
+  async function handleGeminiTranslation(image, mimeType) {
+    const imageObject = {
+      imageUri: image,
+      mimeType: mimeType,
+    };
+    console.log(imageObject);
+    try {
+      const translatedMenu = await axios.post(
+        `${import.meta.env.VITE_API_URL}/gemini/translate-menu-from-uri`,
+        imageObject
+      );
+      console.log("Menu translated", translatedMenu.data);
+      return translatedMenu.data;
+    } catch (err) {
+      console.log("Error translating with Gemini", err);
+    }
   }
 
   async function createOrderMenu(order, language) {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: `Please generate a natural-sounding, waiter-friendly restaurant order in ${language} with a polite greeting. Here is the order as an array: ${JSON.stringify(
-        order
-      )}`,
-      config: {
-        systemInstruction:
-          "You help a customer formulating an order for the waiter",
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              orderOriginal: {
-                type: "string",
-                description:
-                  "Restaurant order in target language (see prompt) that a customer can communicate to the waiter. Example: 你好，我想点两份宫保鸡丁",
-              },
-              orderPronunciation: {
-                type: "string",
-                description:
-                  "Restaurant order pronunciation so that a customer can communicate to the waiter. Example: Nǐ hǎo, wǒ xiǎng diǎn liǎng fèn gōng bǎo jī dīng",
-              },
-              orderTranslation: {
-                type: "string",
-                description:
-                  "Restaurant order translated in English, pay attention that the menu items are translated properly",
-              },
-            },
-            required: ["orderOriginal", "orderPronunciation", "orderTranslation"],
-          },
-        },
-      },
-    });
-
-    const chineseText = await response.text;
-    console.log("Waiter-friendly order:", chineseText);
-    //transform text into array
-    const parsedArray = JSON.parse(chineseText); 
-    console.log(parsedArray)
-    setCurrentOrderMenu(parsedArray);
-    return chineseText;
+    const orderObject = {
+      order: order,
+      language: language,
+    };
+    console.log(orderObject);
+    try {
+      const orderedMenu = await axios.post(
+        `${import.meta.env.VITE_API_URL}/gemini/create-order`,
+        orderObject
+      );
+      console.log("Ordered Menu", orderedMenu.data);
+      setCurrentOrderMenu(orderedMenu.data);
+      return orderedMenu.data;
+    } catch (err) {
+      console.log("Error creating order", err);
+    }
   }
 
   //* Get All Menus for One User
@@ -292,7 +221,7 @@ const MenuContextWrapper = ({ children }) => {
         allMenusOneUserLoading,
         handleGetOneMenu,
         createOrderMenu,
-        currentOrderMenu
+        currentOrderMenu,
       }}
     >
       {children}
