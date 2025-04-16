@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { MenuContext } from "@/contexts/menuContext";
 import { SpeechContext } from "@/contexts/speechContext";
 import { Button } from "@/components/ui/button";
-import { CupSoda, SpeakerIcon } from "lucide-react";
+import { CupSoda, Megaphone } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -18,12 +18,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { TableHead, TableRow } from "@/components/ui/table";
 
 const ResultPage = () => {
   const { menuId } = useParams();
-  const { handleGetOneMenu, currentMenu, handleDeleteMenu, createOrderMenu } =
+  const { handleGetOneMenu, currentMenu, createOrderMenu } =
     useContext(MenuContext);
-  const { googleTextToSpeech } = useContext(SpeechContext);
+  const { googleTextToSpeech, isPlaying } = useContext(SpeechContext);
   const nav = useNavigate();
   const [orderItems, setOrderItems] = useState({});
   const [imageOpen, setImageOpen] = useState(false);
@@ -95,11 +96,16 @@ const ResultPage = () => {
       </div>
       <div>
         <h1 className="text-xl my-2">Menu Items</h1>
+        <TableRow className="text-sm font-light">
+          <TableHead className="w-10/12 p-0">Item Description</TableHead>
+          <TableHead className="w-2/12 p-0">Order</TableHead>
+          <TableHead className="w 2/12 p-0">Audio</TableHead>
+        </TableRow>
         {currentMenu &&
           currentMenu.dishes.map((oneItem) => {
             return (
               <div key={oneItem._id} className="pt-3">
-                <div className="flex flex-row justify-center space-y-5">
+                <div className="flex flex-row justify-between space-y-5">
                   <div className="mr-3">
                     <CupSoda />
                   </div>
@@ -137,8 +143,9 @@ const ResultPage = () => {
                       }
                       variant="outline"
                       className="ml-3"
+                      disabled={isPlaying}
                     >
-                      <SpeakerIcon />
+                      <Megaphone />
                     </Button>
                   </div>
                 </div>
@@ -148,38 +155,18 @@ const ResultPage = () => {
           })}
       </div>
       <div className="flex flex-row justify-center">
-        <div className="w-6/12 flex justify-center">
+        <div className="w-12/12 flex justify-center">
           <Button
             onClick={() => {
               const orderArray = getOrderArray();
               console.log("Order items:", orderArray);
-              // Send to API or handle as needed
               createOrderMenu(orderArray, currentMenu.language);
-              nav(`/order-menu/${menuId}`)
+              nav(`/order-menu/${menuId}`);
             }}
             variant="default"
             className="my-6 w-10/12"
           >
             Submit Order
-          </Button>
-        </div>
-        <div className="w-6/12 flex justify-center">
-          <Button
-            onClick={() => nav("/menu-history")}
-            variant="default"
-            className="my-6 w-10/12"
-          >
-            View all menus
-          </Button>
-        </div>
-
-        <div className="w-6/12 flex justify-center">
-          <Button
-            onClick={() => handleDeleteMenu(menuId)}
-            variant="destructive"
-            className="my-6 w-10/12"
-          >
-            Delete menu
           </Button>
         </div>
       </div>

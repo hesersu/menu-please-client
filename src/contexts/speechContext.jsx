@@ -6,12 +6,14 @@ import axios from "axios";
 const SpeechContext = createContext();
 
 const SpeechContextWrapper = ({ children }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Synthesize Speech
   async function googleTextToSpeech(text, language) {
     console.log(text, language);
 
     try {
+      setIsPlaying(true);
       const apiKey = import.meta.env.VITE_GOOGLESTTS_API;
       if (!apiKey || !text) return;
 
@@ -19,7 +21,7 @@ const SpeechContextWrapper = ({ children }) => {
 
       let data;
 
-      if (language === "Chinese" || language === "zh-CN" ) {
+      if (language === "Chinese" || language === "zh-CN") {
         data = {
           input: {
             text: text,
@@ -33,7 +35,7 @@ const SpeechContextWrapper = ({ children }) => {
             audioEncoding: "MP3",
           },
         };
-      } else if (language === "Korean" || language === "ko" ) {
+      } else if (language === "Korean" || language === "ko") {
         data = {
           input: {
             text: text,
@@ -47,7 +49,7 @@ const SpeechContextWrapper = ({ children }) => {
             audioEncoding: "MP3",
           },
         };
-      } else if (language === "Japanese" || language === "ja" ) {
+      } else if (language === "Japanese" || language === "ja") {
         data = {
           input: {
             text: text,
@@ -61,9 +63,7 @@ const SpeechContextWrapper = ({ children }) => {
             audioEncoding: "MP3",
           },
         };
-      }
-
-      else if (language === "English" || language === "en" ) {
+      } else if (language === "English" || language === "en") {
         data = {
           input: {
             text: text,
@@ -100,6 +100,7 @@ const SpeechContextWrapper = ({ children }) => {
 
       const responseJson = await response.json();
       console.log(responseJson);
+      // Base64 Naguc
       const base64 = responseJson.audioContent;
       const binaryString = atob(base64);
       const len = binaryString.length;
@@ -110,54 +111,68 @@ const SpeechContextWrapper = ({ children }) => {
       const audioBlob = new Blob([bytes], { type: "audio/mpeg" });
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
+
+      // Event Listeners to track audio
+      audio.addEventListener("ended", () => {
+        setIsPlaying(false);
+        URL.revokeObjectURL(audioUrl);
+      });
+
+      audio.addEventListener("error", () => {
+        setIsPlaying(false);
+        URL.revokeObjectURL(audioUrl);
+        console.error("Audio playback error");
+      });
+
+      // Audio Play
       audio.play();
-      console.log(audioUrl);
       return audioUrl;
     } catch (error) {
+      setIsPlaying(false);
       throw new Error(error);
     }
   }
-// Traslate transcribed text 
-const translateText = async (text, fromLang, toLang) => {
-  try {
-    const apiKey = import.meta.env.VITE_GOOGLESTTS_API;
-    const response = await axios.post(
-      `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
-      {
-        q: text,
-        source: fromLang,
-        target: toLang,
-        format: "text",
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
+  // Traslate transcribed text
+  const translateText = async (text, fromLang, toLang) => {
+    try {
+      const apiKey = import.meta.env.VITE_GOOGLESTTS_API;
+      const response = await axios.post(
+        `https://translation.googleapis.com/language/translate/v2?key=${apiKey}`,
+        {
+          q: text,
+          source: fromLang,
+          target: toLang,
+          format: "text",
         },
-      }
-    );
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    const translated = response.data.data.translations[0].translatedText;
-    // googleTextToSpeech(translated, toLang)
-    // speak(translated, toLang);
-    return translated;
-  } catch (error) {
-    console.error("Translation error:", error);
-    return "";
-  }
-};
+      const translated = response.data.data.translations[0].translatedText;
+      // googleTextToSpeech(translated, toLang)
+      // speak(translated, toLang);
+      return translated;
+    } catch (error) {
+      console.error("Translation error:", error);
+      return "";
+    }
+  };
 
-
-// const speak = (text, toLang = "zh-CN") => {
-//   const utterance = new SpeechSynthesisUtterance(text);
-//   utterance.lang = lang;
-//   speechSynthesis.speak(utterance);
-// };
+  // const speak = (text, toLang = "zh-CN") => {
+  //   const utterance = new SpeechSynthesisUtterance(text);
+  //   utterance.lang = lang;
+  //   speechSynthesis.speak(utterance);
+  // };
 
   return (
     <SpeechContext.Provider
       value={{
         googleTextToSpeech,
         translateText,
+        isPlaying,
       }}
     >
       {children}
