@@ -8,7 +8,7 @@ const MenuContext = createContext();
 const MenuContextWrapper = ({ children }) => {
   const [currentMenu, setCurrentMenu] = useState(null);
   const [currentRestaurantId, setCurrentRestaurantId] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const { currentUser } = useContext(AuthContext);
   const [allMenusOneUser, setAllMenusOneUser] = useState(null);
   const [allMenusOneUserLoading, setAllMenusOneUserLoading] = useState(true);
@@ -79,6 +79,7 @@ const MenuContextWrapper = ({ children }) => {
 
   async function handleCreateMenu(event, formMenuData) {
     event.preventDefault();
+    setIsLoading(true)
     //Use Form Data because it is not only JSON, but mixed files incl. Image
     const uploadedFile = await uploadFile(formMenuData.file);
     console.log(
@@ -117,6 +118,7 @@ const MenuContextWrapper = ({ children }) => {
           { dishes: JSON.parse(dishes) }
         );
         console.log("patch response", responsePatch.data);
+        setIsLoading(false)
         nav(`/results/${responsePatch.data._id}`);
       } catch (err) {
         console.log(err);

@@ -1,16 +1,9 @@
-import { useContext } from "react";
-import { AuthContext } from "../contexts/authContext";
-import { Navigate } from "react-router-dom";
-import { LoadingSpinner } from "./loading-spinner";
+import React from 'react'
 
-export const ProtectedRoute = ({ children }) => {
-  const { isLoading, isLoggedIn } = useContext(AuthContext);
-  if (isLoading) {
-    //TODO: Update global loading
-    return (
-      <div className="flex items-center gap-3 justify-center p-10">
-     <svg
-                className="mr-2 h-8 w-8 text-white"
+export const LoadingSpinner = () => {
+  return (
+    <svg
+                className="mr-2 h-8 w-8 text-black"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -39,12 +32,5 @@ export const ProtectedRoute = ({ children }) => {
                   />
                 </g>
               </svg>
-      <span>Warten ist eine Tugend</span>
-    </div>
-    );
-  }
-  if (!isLoggedIn) {
-    return <Navigate to="/login" />;
-  }
-  return <div>{children}</div>;
-};
+  )
+}
