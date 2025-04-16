@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { UserPlus } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -12,6 +12,8 @@ import { Label } from "@/components/ui/label"
 import axios from "axios"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import { toast } from "sonner"
+
 
 export function SignUpForm({
   className,
@@ -35,18 +37,18 @@ export function SignUpForm({
           nav("/login");
         })
         .catch((err) => {
+          toast.error(err.response?.data?.errorMessage || "Sign-up failed")
           console.log(err);
         });
     }
 
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card className="bg-card text-card-foreground">
+      <Card className="bg-card text-card-foreground w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl m-5">
         <CardHeader>
           <CardTitle>Create a new account</CardTitle>
           <CardDescription>
-            Enter your username, email and password below to create to your account
+            Fill out this form to create a new account. 
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -85,7 +87,7 @@ export function SignUpForm({
               </div>
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full">
-                  Sign-up
+                  <UserPlus/>Sign-up
                 </Button>
                 {/* <Button variant="outline" className="w-full">
                   Login with Google
@@ -101,6 +103,5 @@ export function SignUpForm({
           </form>
         </CardContent>
       </Card>
-    </div>
   );
 }

@@ -9,6 +9,7 @@ import { MenuHistoryPage } from "./pages/MenuHistoryPage";
 import ResultPage from "./pages/ResultPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { OrderMenuPage } from "./pages/OrderMenuPage";
+import { Toaster } from "sonner";
 
 function App() {
   return (
@@ -58,6 +59,7 @@ function App() {
           }
         />
       </Routes>
+      <Toaster position="top-center" richColors />
     </>
   );
 }
