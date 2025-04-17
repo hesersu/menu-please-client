@@ -39,7 +39,7 @@ export const ProtectedRoute = ({ children }) => {
                   />
                 </g>
               </svg>
-      <span>Warten ist eine Tugend</span>
+      <span>Loading...</span>
     </div>
     );
   }

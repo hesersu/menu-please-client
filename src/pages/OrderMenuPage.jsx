@@ -26,7 +26,7 @@ import { CircleStop } from 'lucide-react';
 
 export const OrderMenuPage = () => {
   const { createOrderMenu } = useContext(MenuContext);
-  const { translateText, googleTextToSpeech } = useContext(SpeechContext);
+  const { translateText, googleTextToSpeech, isPlaying } = useContext(SpeechContext);
   const { currentMenu, currentOrderMenu, handleGetOneMenu } =
     useContext(MenuContext);
   const [fromLang, setFromLang] = useState("en");
@@ -39,7 +39,7 @@ export const OrderMenuPage = () => {
   const [speakerRole, setSpeakerRole] = useState(null); // "customer" or "waiter"
   const [conversation, setConversation] = useState([]);
   const { menuId } = useParams();
-
+ 
   useEffect(() => {
     async function loadOrderMenu() {
       //Clear the conversation array when loading the page
@@ -177,7 +177,7 @@ export const OrderMenuPage = () => {
                 className={`max-w-xs p-4 rounded-lg shadow-sm ${
                   oneText.role === "Customer"
                     ? "w-4/5 bg-muted text-left rounded-bl-none"
-                    : "w-4/5 bg-card text-black text-right rounded-br-none"
+                    : "w-4/5 bg-accent text-right rounded-br-none"
                 }`}
               >
                 <div className="text-sm font-semibold mb-1">{oneText.role}</div>
@@ -198,6 +198,7 @@ export const OrderMenuPage = () => {
                 {/* Audio play button */}
                 <Button
                   variant="ghost"
+                  disabled={isPlaying}
                   size="sm"
                   className="mt-2"
                   onClick={() => {

@@ -13,6 +13,7 @@ import { Toaster } from "sonner";
 
 import { ThemeProvider } from "@/components/theme-provider";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { AboutUsPage } from "./pages/AboutUsPage";
 
 function App() {
   return (
@@ -59,6 +60,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <OrderMenuPage />
+              </ProtectedRoute>
+            }
+          />
+           <Route
+            path="/about-us"
+            element={
+              <ProtectedRoute>
+                <AboutUsPage />
               </ProtectedRoute>
             }
           />

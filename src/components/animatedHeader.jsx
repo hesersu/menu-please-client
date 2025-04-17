@@ -1,14 +1,13 @@
 import React from 'react'
 import { motion } from "framer-motion";
 
+export const AnimatedHeader = ({title}) => {
 
-export const AnimatedHeader = ({text = "Welcome!"}) => {
-
-    const letters = text.split("");
+    const letters = title.split("");
 
   return (
     <>
-    <h1 className="text-4xl flex space-x-1">
+    <h1 className="text-4xl flex space-x-1 mb-5">
       {letters.map((letter, index) => (
         <motion.span
           key={index}
