@@ -13,7 +13,7 @@ export const LoginPage = () => {
   return (
     <div className="flex flex-col items-center justify-start min-h-screen py-6 px-6 md:px-10">
       <div className = "mb-6">
-              <AnimatedHeader/>
+              <AnimatedHeader title={"Welcome!"} />
               </div>
         <LoginForm />
     </div>

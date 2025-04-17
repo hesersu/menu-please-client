@@ -177,7 +177,7 @@ export const OrderMenuPage = () => {
                 className={`max-w-xs p-4 rounded-lg shadow-sm ${
                   oneText.role === "Customer"
                     ? "w-4/5 bg-muted text-left rounded-bl-none"
-                    : "w-4/5 bg-card text-black text-right rounded-br-none"
+                    : "w-4/5 bg-accent text-right rounded-br-none"
                 }`}
               >
                 <div className="text-sm font-semibold mb-1">{oneText.role}</div>
