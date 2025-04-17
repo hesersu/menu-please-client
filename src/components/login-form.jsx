@@ -40,7 +40,7 @@ export function LoginForm({ className, ...props }) {
       );
       console.log("user was logged in successfully", res.data);
       localStorage.setItem("authToken", res.data.authToken);
-      nav("/profile");
+      nav("/");
       return authenticateUser();
     } catch (err) {
       console.log(err);

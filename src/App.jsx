@@ -40,13 +40,23 @@ function App() {
             }
           />
           <Route
-            path="/translate-menu"
+            path="/translate-menu" 
             element={
               <ProtectedRoute>
                 <TranslateMenuPage />
               </ProtectedRoute>
             }
           />
+
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <TranslateMenuPage />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/results/:menuId"
             element={
