@@ -29,13 +29,16 @@ export const Navbar = ({}) => {
     <section className="py-2">
       <div className="block mx-4">
         <div className="flex items-center justify-between">
-          <a href="/translate-menu" className="flex items-center gap-2">
-            <img
-              src={LogoImage}
-              className="max-h-12"
-              alt="Menu, Please! Logo"
-            />
-          </a>
+          <div className="flex items-center justify-center text-md font-bold text-[#b43b72]">
+            <a href="/translate-menu" className="flex items-center gap-2">
+              <img
+                src={LogoImage}
+                className="max-h-12"
+                alt="Menu, Please! Logo"
+              />
+            </a>
+            <h1>Menu, Please!</h1>
+          </div>
           <Sheet>
             <SheetTrigger asChild className="">
               <Button variant="outline" size="icon">
