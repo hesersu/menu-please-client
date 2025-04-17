@@ -74,7 +74,7 @@ export const Navbar = ({}) => {
               <div className="flex flex-col flex-grow gap-6 px-4">
                 <Link to="/translate-menu">
                   <h3 className="text-md py-0 font-semibold hover:no-underline flex items-center gap-3">
-                    <CameraIcon /> Translate Menus
+                    <CameraIcon /> Translate Menu
                   </h3>
                 </Link>
                 <Link to="/menu-history">

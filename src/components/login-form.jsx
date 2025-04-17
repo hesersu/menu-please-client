@@ -40,78 +40,79 @@ export function LoginForm({ className, ...props }) {
       );
       console.log("user was logged in successfully", res.data);
       localStorage.setItem("authToken", res.data.authToken);
+      await authenticateUser();
       nav("/");
-      return authenticateUser();
+      //! Here was a return autheticateUser(). In case login breaks, maybe that's the issue. :)
     } catch (err) {
       console.log(err);
       setErrorMessage(err.response?.data?.errorMessage || "Login failed");
-      toast.error(err.response?.data?.errorMessage || "Login failed")
+      toast.error(err.response?.data?.errorMessage || "Login failed");
     }
   }
 
   // This returns the component
 
   return (
-      <Card className="bg-card text-card-foreground w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl m-5">
-        <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
-            Enter your email and password below to login to your account
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleLogin}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="m@example.com"
-                  required
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                  }}
-                />
-              </div>
-              <div className="grid gap-3">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                  {/* <a
+    <Card className="bg-card text-card-foreground w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl m-5">
+      <CardHeader>
+        <CardTitle>Login to your account</CardTitle>
+        <CardDescription>
+          Enter your email and password below to login to your account
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleLogin}>
+          <div className="flex flex-col gap-6">
+            <div className="grid gap-3">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="m@example.com"
+                required
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              />
+            </div>
+            <div className="grid gap-3">
+              <div className="flex items-center">
+                <Label htmlFor="password">Password</Label>
+                {/* <a
                     href="#"
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                   >
                     Forgot your password?
                   </a> */}
-                </div>
-                <Input
-                  id="password"
-                  type="password"
-                  required
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                  }}
-                />
               </div>
-              <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  <LogIn/> Login
-                </Button>
-                {/* <Button variant="outline" className="w-full">
+              <Input
+                id="password"
+                type="password"
+                required
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
+              />
+            </div>
+            <div className="flex flex-col gap-3">
+              <Button type="submit" className="w-full">
+                <LogIn /> Login
+              </Button>
+              {/* <Button variant="outline" className="w-full">
                   Login with Google
                 </Button> */}
-              </div>
             </div>
-            <div className="mt-4 text-center text-sm">
-              Don't have an account?{" "}
-              <Link to="/sign-up" className="underline underline-offset-4">
-                Sign up
-              </Link>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+          <div className="mt-4 text-center text-sm">
+            Don't have an account?{" "}
+            <Link to="/sign-up" className="underline underline-offset-4">
+              Sign up
+            </Link>
+          </div>
+        </form>
+      </CardContent>
+    </Card>
   );
 }

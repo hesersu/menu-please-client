@@ -14,6 +14,7 @@ import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { AboutUsPage } from "./pages/AboutUsPage";
+import Footer from "./components/footer";
 
 function App() {
   return (
@@ -40,7 +41,7 @@ function App() {
             }
           />
           <Route
-            path="/translate-menu" 
+            path="/translate-menu"
             element={
               <ProtectedRoute>
                 <TranslateMenuPage />
@@ -73,7 +74,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-           <Route
+          <Route
             path="/about-us"
             element={
               <ProtectedRoute>
@@ -84,6 +85,7 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
         <Toaster position="top-center" richColors />
+        <Footer />
       </>
     </ThemeProvider>
   );
