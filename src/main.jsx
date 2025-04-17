@@ -6,6 +6,7 @@ import { BrowserRouter as Browser } from "react-router-dom";
 import { AuthContextWrapper } from "./contexts/authContext";
 import { MenuContextWrapper } from "./contexts/menuContext";
 import { SpeechContextWrapper } from "./contexts/speechContext";
+import { PostHogProvider } from "posthog-js/react";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -13,7 +14,15 @@ createRoot(document.getElementById("root")).render(
       <AuthContextWrapper>
         <SpeechContextWrapper>
           <MenuContextWrapper>
-            <App />
+            <PostHogProvider
+              apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+              options={{
+                api_host: "https://eu.i.posthog.com",
+                debug: import.meta.env.MODE === "development",
+              }}
+            >
+              <App />
+            </PostHogProvider>
           </MenuContextWrapper>
         </SpeechContextWrapper>
       </AuthContextWrapper>
