@@ -73,7 +73,7 @@ export const MenuHistoryPage = () => {
       return (
         <>
           {!allMenusOneUserLoading && (
-            <div className={cn("flex flex-col gap-6 bg-card text-card-foreground p-6 rounded-xl shadow-card")}>
+            <div className={cn("flex flex-col gap-6 text-card-foreground p-6 rounded-xl")}>
               <div className="flex flex-col gap-2">
                 <h2 className="text-2xl font-semibold leading-none tracking-tight">Menu History</h2>
                 <div className="flex justify-between items-center">

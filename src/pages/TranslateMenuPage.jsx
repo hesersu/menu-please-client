@@ -142,8 +142,11 @@ export const TranslateMenuPage = () => {
           />
         </div>
 
-        <div className="grid mb-6 w-10/12 m-auto">
-          <Button disabled={isLoading || !isFormComplete}>
+        <div className="flex flex-col items-center justify-center mb-6 w-10/12 mx-auto gap-2">
+          {isLoading && (<p className="text-xs">Processing can take up to 30</p>)}
+          <Button 
+          className="w-xs" 
+          disabled={isLoading || !isFormComplete}>
             {isLoading ? (
               <>
                 {/* Spinner */}
