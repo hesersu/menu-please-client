@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { MenuContext } from "@/contexts/menuContext";
 import { SpeechContext } from "@/contexts/speechContext";
 import { Button } from "@/components/ui/button";
-import { CupSoda, Megaphone } from "lucide-react";
+import { CupSoda, Megaphone, Utensils } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -107,7 +107,7 @@ const ResultPage = () => {
               <div key={oneItem._id} className="pt-3">
                 <div className="flex flex-row justify-between space-y-5">
                   <div className="mr-3">
-                    <CupSoda />
+                    <Utensils />
                   </div>
                   <div className="w-8/12 space-y-1">
                     <h3 className="text-md font-bold">{oneItem.nameEnglish}</h3>
