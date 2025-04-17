@@ -15,6 +15,7 @@ import {
   SheetTitle,
   SheetTrigger,
   SheetDescription,
+  SheetClose,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
@@ -72,16 +73,20 @@ export const Navbar = ({}) => {
                 <Separator />
               </SheetHeader>
               <div className="flex flex-col flex-grow gap-6 px-4">
-                <Link to="/translate-menu">
-                  <h3 className="text-md py-0 font-semibold hover:no-underline flex items-center gap-3">
-                    <CameraIcon /> Translate Menu
-                  </h3>
-                </Link>
-                <Link to="/menu-history">
-                  <h3 className="text-md py-0 font-semibold hover:no-underline flex gap-3">
-                    <BookOpenText /> Menu history
-                  </h3>
-                </Link>
+                <SheetClose asChild>
+                  <Link to="/translate-menu">
+                    <h3 className="text-md py-0 font-semibold hover:no-underline flex items-center gap-3">
+                      <CameraIcon /> Translate Menu
+                    </h3>
+                  </Link>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Link to="/menu-history">
+                    <h3 className="text-md py-0 font-semibold hover:no-underline flex gap-3">
+                      <BookOpenText /> Menu history
+                    </h3>
+                  </Link>
+                </SheetClose>
                 <Separator className="my-3" />
                 <div className="flex flex-col gap-3 pt-3 align-middle justify-center">
                   {isLoggedIn ? (
