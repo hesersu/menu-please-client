@@ -5,7 +5,6 @@ import { useContext } from "react";
 import { useState } from "react";
 import { useRef } from "react";
 
-
 //UI Components
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -19,14 +18,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Play } from 'lucide-react';
-import { Mic } from 'lucide-react';
-import { AudioLines } from 'lucide-react';
-import { CircleStop } from 'lucide-react';
+import { Mic2, MicIcon, Play } from "lucide-react";
+import { Mic } from "lucide-react";
+import { AudioLines } from "lucide-react";
+import { CircleStop } from "lucide-react";
 
 export const OrderMenuPage = () => {
   const { createOrderMenu } = useContext(MenuContext);
-  const { translateText, googleTextToSpeech, isPlaying } = useContext(SpeechContext);
+  const { translateText, googleTextToSpeech, isPlaying } =
+    useContext(SpeechContext);
   const { currentMenu, currentOrderMenu, handleGetOneMenu } =
     useContext(MenuContext);
   const [fromLang, setFromLang] = useState("en");
@@ -39,7 +39,7 @@ export const OrderMenuPage = () => {
   const [speakerRole, setSpeakerRole] = useState(null); // "customer" or "waiter"
   const [conversation, setConversation] = useState([]);
   const { menuId } = useParams();
- 
+
   useEffect(() => {
     async function loadOrderMenu() {
       //Clear the conversation array when loading the page
@@ -123,7 +123,7 @@ export const OrderMenuPage = () => {
     setTimeout(() => {
       setIsRecording(true);
     }, 500);
-  }
+  };
 
   // stop Recording Function
   const stopRecording = () => {
@@ -159,7 +159,10 @@ export const OrderMenuPage = () => {
 
   return (
     <div>
-      <h2 className="mx-6 mb-5">🎙️ Live Voice Translator</h2>
+      <h2 className="mx-6 mb-5 flex items-center">
+        <MicIcon className="mr-2" />
+        <span>Live Translator (Experimental)</span>
+      </h2>
       <div className="mx-6 mb-5">
         <ScrollArea className="h-120 w-full rounded-md border">
           <div className="p-4">
@@ -168,57 +171,63 @@ export const OrderMenuPage = () => {
             </h4>
             {[...conversation].reverse().map((oneText, index) => (
               <div
-              key={index}
-              className={`flex ${
-                oneText.role === "Customer" ? "justify-start" : "justify-end"
-              } mb-3`}
-            >
-              <div
-                className={`max-w-xs p-4 rounded-lg shadow-sm ${
-                  oneText.role === "Customer"
-                    ? "w-4/5 bg-muted text-left rounded-bl-none"
-                    : "w-4/5 bg-accent text-right rounded-br-none"
-                }`}
+                key={index}
+                className={`flex ${
+                  oneText.role === "Customer" ? "justify-start" : "justify-end"
+                } mb-3`}
               >
-                <div className="text-sm font-semibold mb-1">{oneText.role}</div>
-            
-                {/* Message content depending on role */}
-                {oneText.role === "Customer" ? (
-                  <>
-                    <div>{oneText.original}</div>
-                    <div className="text-muted-foreground text-sm mt-1">{oneText.translated}</div>
-                  </>
-                ) : (
-                  <>
-                    <div>{oneText.translated}</div>
-                    <div className="text-muted-foreground text-sm mt-1">{oneText.original}</div>
-                  </>
-                )}
-            
-                {/* Audio play button */}
-                <Button
-                  variant="ghost"
-                  disabled={isPlaying}
-                  size="sm"
-                  className="mt-2"
-                  onClick={() => {
-                    handlePlayAudio(
-                      oneText.translated,
-                      oneText.role === "Customer" ? toLang : fromLang
-                    );
-                  }}
+                <div
+                  className={`max-w-xs p-2 rounded-lg shadow-sm ${
+                    oneText.role === "Customer"
+                      ? "w-4/5 bg-muted text-left rounded-bl-none"
+                      : "w-4/5 bg-accent text-right rounded-br-none"
+                  }`}
                 >
-                  <Play/> Audio
-                </Button>
+                  <div className="text-sm font-semibold mb-1">
+                    {oneText.role}
+                  </div>
+
+                  {/* Message content depending on role */}
+                  {oneText.role === "Customer" ? (
+                    <>
+                      <div>{oneText.translated}</div>
+                      <div className="text-muted-foreground text-sm mt-1">
+                        {oneText.original}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>{oneText.translated}</div>
+                      <div className="text-muted-foreground text-sm mt-1">
+                        {oneText.original}
+                      </div>
+                    </>
+                  )}
+
+                  {/* Audio play button */}
+                  <Button
+                    variant="ghost"
+                    disabled={isPlaying}
+                    size="sm"
+                    className="mt-2"
+                    onClick={() => {
+                      handlePlayAudio(
+                        oneText.translated,
+                        oneText.role === "Customer" ? toLang : fromLang
+                      );
+                    }}
+                  >
+                    <Play /> Audio
+                  </Button>
+                </div>
               </div>
-            </div>
             ))}
           </div>
         </ScrollArea>
       </div>
 
-      <div className="flex flex-row gap-4 mx-6 mt-10">
-      <Button
+      <div className="flex flex-row gap-4 mx-6 mt-10 mb-8">
+        <Button
           className="flex-1 h-20 whitespace-normal text-wrap flex flex-col items-center justify-center gap-1 text-center"
           onClick={() => {
             setSpeakerRole("customer");
@@ -229,15 +238,19 @@ export const OrderMenuPage = () => {
           {isRecording && speakerRole === "customer" ? (
             <>
               <CircleStop className="w-6 h-6" />
-              <span className="text-xs sm:text-sm">Stop Customer Recording</span>
+              <span className="text-xs sm:text-sm">
+                Stop Customer Recording
+              </span>
             </>
           ) : (
             <>
               <Mic className="w-6 h-6" />
-              <span className="text-xs sm:text-sm">Start Customer Recording</span>
+              <span className="text-xs sm:text-sm">
+                Start Customer Recording
+              </span>
             </>
           )}
-        </Button>   
+        </Button>
 
         <Button
           className="flex-1 h-20 whitespace-normal text-wrap flex flex-col items-center justify-center gap-1 text-center"
@@ -255,10 +268,12 @@ export const OrderMenuPage = () => {
           ) : (
             <>
               <Mic className="w-6 h-6" />
-              <span className="text-xs sm:text-sm">Start Waiter <br/> Recording</span>
+              <span className="text-xs sm:text-sm">
+                Start Waiter <br /> Recording
+              </span>
             </>
           )}
-        </Button>   
+        </Button>
       </div>
     </div>
   );
