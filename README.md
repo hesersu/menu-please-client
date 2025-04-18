@@ -1,8 +1,8 @@
-# Menu, Please!
+# Menu, please!
 
 ## Application Description
 
-Menu Please is a modern web application designed to simplify the dining experience. It allows users to browse and order food from Chinese, Japanese, and Korean cuisines. The app provides a seamless and intuitive interface for exploring menus, placing orders, and managing reservations.
+Menu, please! is a modern web application designed to simplify the dining experience. It allows users to browse and order food from Chinese, Japanese, and Korean cuisines. The app provides a seamless and intuitive interface for exploring menus, placing orders, and managing reservations.
 
 ## Used Technologies
 
@@ -26,7 +26,7 @@ Menu Please is a modern web application designed to simplify the dining experien
 
 ## Link to Application
 
-[Menu Please - Live Application](https://menu-please.netlify.app/)
+[Menu, please! - Live Application](https://menu-please.netlify.app/)
 
 ## Screenshots
 

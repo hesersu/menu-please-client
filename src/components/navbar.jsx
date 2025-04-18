@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/authContext";
 import { Link } from "react-router-dom";
 import { DarkModeToggle } from "@/components/darkmode-toggle";
@@ -21,6 +21,36 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
 export const Navbar = ({}) => {
+  // Menu phrases in different languages
+  const menuPhrases = [
+    { language: "English", phrase: "Menu, please!" },
+    { language: "Japanese", phrase: "メニューをお願いします" },
+    { language: "Korean", phrase: "메뉴 주세요" },
+    { language: "Chinese", phrase: "请给我菜单" },
+  ];
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      // Fade out
+      setIsVisible(false);
+
+      // Wait for fade out animation to complete
+      setTimeout(() => {
+        // Change to next language
+        setCurrentIndex((prevIndex) => (prevIndex + 1) % menuPhrases.length);
+        // Fade in
+        setIsVisible(true);
+      }, 1000);
+    }, 10000);
+
+    return () => clearInterval(intervalId);
+  }, [menuPhrases.length]);
+
+  const currentPhrase = menuPhrases[currentIndex];
+
   // Login Status
 
   const { isLoggedIn, handleLogout, currentUser } = useContext(AuthContext);
@@ -35,10 +65,16 @@ export const Navbar = ({}) => {
               <img
                 src={LogoImage}
                 className="max-h-12"
-                alt="Menu, Please! Logo"
+                alt="Menu, please! Logo"
               />
             </a>
-            <h1>Menu, Please!</h1>
+            <h1
+              className={`${
+                isVisible ? "opacity-100" : "opacity-0"
+              } transition-opacity duration-500`}
+            >
+              {currentPhrase.phrase}
+            </h1>
           </div>
           <Sheet>
             <SheetTrigger asChild className="">

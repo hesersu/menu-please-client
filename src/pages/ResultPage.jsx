@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { MenuContext } from "@/contexts/menuContext";
 import { SpeechContext } from "@/contexts/speechContext";
 import { Button } from "@/components/ui/button";
-import { CupSoda, Megaphone, Utensils } from "lucide-react";
+import { CupSoda, Dot, Megaphone, Utensils } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -28,21 +28,36 @@ const ResultPage = () => {
   const nav = useNavigate();
   const [orderItems, setOrderItems] = useState({});
   const [imageOpen, setImageOpen] = useState(false);
+  const [categorizedDishes, setCategorizedDishes] = useState({});
 
   // Get One Menu
-
   useEffect(() => {
     handleGetOneMenu(menuId);
   }, [menuId]);
 
   // Ordering - Initialize empty order items when menu changes
+  // and categorize dishes
   useEffect(() => {
     if (currentMenu) {
       const initialOrderItems = {};
+      const dishByCategory = {};
+
       currentMenu.dishes.forEach((dish) => {
         initialOrderItems[dish._id] = ""; // Use empty string instead of 0
+
+        // Group dishes by category
+        const categoryKey = dish.categoryEnglish || "Uncategorized";
+        if (!dishByCategory[categoryKey]) {
+          dishByCategory[categoryKey] = {
+            categoryOriginal: dish.categoryOriginal || "",
+            dishes: [],
+          };
+        }
+        dishByCategory[categoryKey].dishes.push(dish);
       });
+
       setOrderItems(initialOrderItems);
+      setCategorizedDishes(dishByCategory);
     }
   }, [currentMenu]);
 
@@ -67,19 +82,56 @@ const ResultPage = () => {
       .filter((item) => item.amount > 0);
   };
 
+  // Render a single dish item
+  const renderDishItem = (oneItem) => (
+    <div key={oneItem._id} className="pt-3">
+      <div className="flex flex-row justify-between space-y-5">
+        <div className="w-8/12 space-y-1">
+          <h3 className="text-md font-bold">{oneItem.nameEnglish}</h3>
+          <h4 className="text-md font-light italic">
+            {oneItem.nameOriginal} ({oneItem.phoneticPronunciation})
+          </h4>
+          <p className="text-md font-light">{oneItem.descriptionEnglish}</p>
+        </div>
+        <div className="w-2/12 ml-3">
+          <Input
+            type="number"
+            placeholder="0"
+            min="0"
+            value={
+              orderItems[oneItem._id] === "" ? "" : orderItems[oneItem._id]
+            }
+            onChange={(e) => handleQuantityChange(oneItem._id, e.target.value)}
+          />
+        </div>
+        <div className="w-2/12">
+          <Button
+            onClick={() =>
+              googleTextToSpeech(oneItem.nameOriginal, currentMenu.language)
+            }
+            variant="outline"
+            className="ml-3"
+            disabled={isPlaying}
+          >
+            <Megaphone />
+          </Button>
+        </div>
+      </div>
+      <Separator />
+    </div>
+  );
+
   return (
     <div className="flex flex-col mx-4 lg:w-10/12 m-auto">
       <div className="mt-2 mb-5">
         <Dialog open={imageOpen} onOpenChange={setImageOpen}>
           <DialogTrigger asChild>
             <div className="cursor-pointer">
-              {/* <AspectRatio ratio={1 / 1}> */}
               <img
                 src={currentMenu && currentMenu.menuImg}
                 alt="Current Menu"
                 className="h-full w-full rounded-md object-cover hover:opacity-90 transition-opacity sm:max-w-[90vw] max-h-[90vh]"
               />
-              {/* </AspectRatio> */}
             </div>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[90vw] max-h-[90vh]">
@@ -95,67 +147,32 @@ const ResultPage = () => {
         </Dialog>
       </div>
       <div>
-        <h1 className="text-xl my-2">Menu Items</h1>
-        <TableRow className="text-sm font-light">
-          <TableHead className="w-10/12 p-0">Item Description</TableHead>
-          <TableHead className="w-2/12 p-0">Order</TableHead>
-          <TableHead className="w 2/12 p-0">Audio</TableHead>
-        </TableRow>
-        {currentMenu &&
-          currentMenu.dishes.map((oneItem) => {
-            return (
-              <div key={oneItem._id} className="pt-3">
-                <div className="flex flex-row justify-between space-y-5">
-                  <div className="mr-3">
-                    <Utensils />
-                  </div>
-                  <div className="w-8/12 space-y-1">
-                    <h3 className="text-md font-bold">{oneItem.nameEnglish}</h3>
-                    <h4 className="text-md font-light font-style: italic">
-                      {oneItem.nameOriginal} ({oneItem.phoneticPronunciation})
-                    </h4>
-                    <p className="text-md font-light">
-                      {oneItem.descriptionEnglish}
-                    </p>
-                  </div>
-                  <div className="w-2/12">
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      min="0"
-                      value={
-                        orderItems[oneItem._id] === ""
-                          ? ""
-                          : orderItems[oneItem._id]
-                      }
-                      onChange={(e) =>
-                        handleQuantityChange(oneItem._id, e.target.value)
-                      }
-                    />
-                  </div>
-                  <div className="w-2/12">
-                    <Button
-                      onClick={() =>
-                        googleTextToSpeech(
-                          oneItem.nameOriginal,
-                          currentMenu.language
-                        )
-                      }
-                      variant="outline"
-                      className="ml-3"
-                      disabled={isPlaying}
-                    >
-                      <Megaphone />
-                    </Button>
-                  </div>
-                </div>
-                <Separator />
+        {/* Render categorized dishes */}
+        {Object.keys(categorizedDishes).map((categoryKey) => {
+          const category = categorizedDishes[categoryKey];
+          return (
+            <div key={categoryKey} className="mb-6">
+              <div className="flex items-center py-4">
+                <h2 className="text-lg font-semibold">{categoryKey}</h2>
+                {category.categoryOriginal && (
+                  <span className="ml-2 text-sm italic">
+                    ({category.categoryOriginal})
+                  </span>
+                )}
               </div>
-            );
-          })}
+              <TableRow className="flex text-sm font-light gap-5">
+                <TableHead className="w-10/12 p-0">Description</TableHead>
+                <TableHead className="w-2/12 p-0">Amount</TableHead>
+                <TableHead className="w-2/12 p-0">Audio</TableHead>
+              </TableRow>
+
+              {category.dishes.map(renderDishItem)}
+            </div>
+          );
+        })}
       </div>
       <div className="flex flex-row justify-center">
-        <div className="w-12/12 flex justify-center">
+        <div className="w-full flex justify-center">
           <Button
             onClick={() => {
               const orderArray = getOrderArray();
@@ -166,7 +183,7 @@ const ResultPage = () => {
             variant="default"
             className="my-6 w-10/12"
           >
-            Submit Order
+            Order Now
           </Button>
         </div>
       </div>
