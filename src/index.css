@@ -135,7 +135,7 @@
   width: 245px;
   height: 270px;
   perspective: 1000px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   cursor: pointer;
 }
 
@@ -192,4 +192,8 @@
 
 .socialbar svg:hover {
   color: var(--foreground);
+}
+
+.posthog-survey {
+  margin: 20px;
 }
