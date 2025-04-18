@@ -30,18 +30,9 @@ Menu, please! is a modern web application designed to simplify the dining experi
 
 ## Screenshots
 
-### Translation Page
-
-![Translation Page](https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-translate.png)  
-
-### Result Page
-
-![Results Page](https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-results.png)  
-
-### History Page
-
-![All Menus](https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-history.png)  
-
-### Live Translation
-
-![Reservation Page](https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-chat2.png)
+<p align="center">
+  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-translate.png" width="300"/>
+  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-results.png" width="300"/>
+  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-history.png" width="300"/>
+  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-chat2.png" width="300"/>
+</p>
