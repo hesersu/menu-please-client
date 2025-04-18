@@ -31,8 +31,8 @@ Menu, please! is a modern web application designed to simplify the dining experi
 ## Screenshots
 
 <p align="center">
-  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-translate.png" width="150"/>
-  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-results.png" width="150"/>
-  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-history.png" width="150"/>
-  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-chat2.png" width="150"/>
+  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-translate.png" width="200"/>
+  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-results.png" width="200"/>
+  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-history.png" width="200"/>
+  <img src="https://github.com/hesersu/menu-please-client/blob/main/public/Screenshots-chat2.png" width="200"/>
 </p>
