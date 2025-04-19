@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { LoadingSpinner } from "@/components/loading-spinner";
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { useState } from "react";
 import { MenuContext } from "@/contexts/menuContext";
-import { CircleArrowDown } from "lucide-react";
+import { CircleArrowDown, Upload } from "lucide-react";
 
 export const TranslateMenuPage = () => {
   const [name, setName] = useState("");
@@ -35,6 +35,7 @@ export const TranslateMenuPage = () => {
   const [language, setLanguage] = useState("");
   const [isFormComplete, setIsFormComplete] = useState(false);
   const { handleCreateMenu, isLoading } = useContext(MenuContext);
+  const fileInputRef = useRef(null);
 
   //check if the form has been filled out completely
   useEffect(() => {
@@ -55,6 +56,10 @@ export const TranslateMenuPage = () => {
     }
   };
 
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
   return (
     <div className="flex flex-col mx-4 lg:w-10/12 m-auto">
       <form
@@ -69,39 +74,47 @@ export const TranslateMenuPage = () => {
         }}
       >
         <div className="grid relative">
-          {preview ? null : (
-            <h1 className="mt-3 flex flex-col absolute text-2xl font-light text-white top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12/12 justify-center items-center z-1">
-              add a photo below
-              <CircleArrowDown className="mt-5 size-8 animate-bounce" />
-            </h1>
-          )}
-          <AspectRatio ratio={1 / 1} className="bg-muted">
-            {preview ? (
-              <img
-                src={preview}
-                alt="Preview"
-                className="h-full w-full rounded-md object-cover"
-              />
-            ) : (
-              <img
-                src="https://images.unsplash.com/photo-1605184861755-8f190fea96a5?q=80"
-                alt="Placeholder"
-                className="h-full w-full rounded-md object-cover"
-              />
+          <div className="cursor-pointer relative" onClick={handleImageClick}>
+            {preview ? null : (
+              <div className="absolute flex flex-col items-center justify-center inset-0 z-10 bg-black/30 rounded-md">
+                <h1 className="mt-3 flex flex-col text-2xl font-light text-white w-full justify-center items-center">
+                  Chick here to add a menu
+                  <Upload className="animate-bounce mt-5 size-8" />
+                </h1>
+              </div>
             )}
-          </AspectRatio>
+            <AspectRatio ratio={1 / 1} className="bg-muted">
+              {preview ? (
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="h-full w-full rounded-md object-cover"
+                />
+              ) : (
+                <img
+                  src="https://images.unsplash.com/photo-1605184861755-8f190fea96a5?q=80"
+                  alt="Placeholder"
+                  className="h-full w-full rounded-md object-cover"
+                />
+              )}
+            </AspectRatio>
+          </div>
         </div>
-        <div className="grid gap-3">
+
+        {/* Hidden file input */}
+        <div className="hidden">
           <Label>Select picture</Label>
           <Input
             id="upload"
             type="file"
-            accept="image/"
+            accept="image/*"
+            ref={fileInputRef}
             onChange={handleImageChange}
           />
         </div>
+
         <div className="grid gap-3">
-          <Label>Select menu language</Label>
+          <Label>Select a menu language</Label>
 
           <Select value={language} onValueChange={setLanguage}>
             <SelectTrigger className="w-auto">
@@ -118,9 +131,7 @@ export const TranslateMenuPage = () => {
           </Select>
         </div>
         <div className="grid gap-3">
-          <Label htmlFor="restaurant-name">
-            Please enter the restaurant name
-          </Label>
+          <Label htmlFor="restaurant-name">Enter the restaurant name</Label>
           <Input
             id="restaurant-name"
             type="text"
@@ -142,14 +153,13 @@ export const TranslateMenuPage = () => {
           />
         </div>
 
-        <div className="flex flex-col items-center justify-center mb-6 w-10/12 mx-auto gap-2">
-          {isLoading}
-          <Button className="w-xs" disabled={isLoading || !isFormComplete}>
+        <div className="grid mb-6 w-10/12 m-auto">
+          <Button disabled={isLoading || !isFormComplete}>
             {isLoading ? (
               <>
                 {/* Spinner */}
                 <LoadingSpinner />
-                Processing...
+                Processing... this can take 30 sec
               </>
             ) : (
               "See Result"
