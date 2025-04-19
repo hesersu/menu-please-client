@@ -61,7 +61,7 @@ export const TranslateMenuPage = () => {
   };
 
   return (
-    <div className="flex flex-col mx-4 lg:w-10/12 m-auto">
+    <div className="flex flex-col mx-4 lg:w-4/12 lg:mx-auto">
       <form
         className="flex flex-col gap-6"
         onSubmit={(event) => {
@@ -73,10 +73,10 @@ export const TranslateMenuPage = () => {
           });
         }}
       >
-        <div className="grid relative">
+        <div className="grid relative ">
           <div className="cursor-pointer relative" onClick={handleImageClick}>
             {preview ? null : (
-              <div className="absolute flex flex-col items-center justify-center inset-0 z-10 bg-black/30 rounded-md">
+              <div className="absolute flex flex-col items-center justify-center inset-0 z-10 bg-black/10 rounded-md">
                 <h1 className="mt-3 flex flex-col text-2xl font-light text-white w-full justify-center items-center">
                   Click here to add a menu
                   <Camera className="animate-bounce mt-5 size-8" />

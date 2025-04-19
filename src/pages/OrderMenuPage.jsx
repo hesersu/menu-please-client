@@ -158,7 +158,7 @@ export const OrderMenuPage = () => {
   }
 
   return (
-    <div>
+    <div className="lg:w-4/12 lg:mx-auto">
       <h2 className="mx-6 mb-5 flex items-center">
         <MicIcon className="mr-2" />
         <span>Live Translator (Experimental)</span>

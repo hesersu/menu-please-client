@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <div>
       <div className="border-t py-6 mx-4 mt-3">
-        <div className="container flex flex-row items-center justify-between gap-2">
+        <div className="container flex flex-row items-center justify-between gap-2 lg:mx-auto">
           <p className="text-sm text-muted-foreground">
             © {new Date().getFullYear()} Menu, Please!
           </p>

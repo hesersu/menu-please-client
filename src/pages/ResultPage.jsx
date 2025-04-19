@@ -122,7 +122,7 @@ const ResultPage = () => {
   );
 
   return (
-    <div className="flex flex-col mx-4 lg:w-10/12 m-auto">
+    <div className="flex flex-col mx-4 lg:w-4/12 lg:mx-auto">
       <div className="mt-2 mb-5">
         <Dialog open={imageOpen} onOpenChange={setImageOpen}>
           <DialogTrigger asChild>
@@ -130,7 +130,7 @@ const ResultPage = () => {
               <img
                 src={currentMenu && currentMenu.menuImg}
                 alt="Current Menu"
-                className="h-full w-full rounded-md object-cover hover:opacity-90 transition-opacity sm:max-w-[90vw] max-h-[90vh]"
+                className="h-full w-full rounded-md object-cover hover:opacity-90 transition-opacity sm:max-w-[100vw] max-h-[100vh]"
               />
             </div>
           </DialogTrigger>

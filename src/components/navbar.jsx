@@ -57,7 +57,7 @@ export const Navbar = ({}) => {
 
   // Page Content
   return (
-    <section className="py-2">
+    <section className="py-2 lg:mx-auto">
       <div className="block mx-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-center text-md font-bold text-[#b43b72]">
