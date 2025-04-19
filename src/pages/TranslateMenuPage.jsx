@@ -78,7 +78,7 @@ export const TranslateMenuPage = () => {
             {preview ? null : (
               <div className="absolute flex flex-col items-center justify-center inset-0 z-10 bg-black/30 rounded-md">
                 <h1 className="mt-3 flex flex-col text-2xl font-light text-white w-full justify-center items-center">
-                  Chick here to add a menu
+                  Click here to add a menu
                   <Camera className="animate-bounce mt-5 size-8" />
                 </h1>
               </div>
