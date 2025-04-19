@@ -24,7 +24,7 @@ import { Label } from "@/components/ui/label";
 import axios from "axios";
 import { useState } from "react";
 import { MenuContext } from "@/contexts/menuContext";
-import { CircleArrowDown, Upload } from "lucide-react";
+import { Camera, CircleArrowDown, Upload } from "lucide-react";
 
 export const TranslateMenuPage = () => {
   const [name, setName] = useState("");
@@ -79,7 +79,7 @@ export const TranslateMenuPage = () => {
               <div className="absolute flex flex-col items-center justify-center inset-0 z-10 bg-black/30 rounded-md">
                 <h1 className="mt-3 flex flex-col text-2xl font-light text-white w-full justify-center items-center">
                   Chick here to add a menu
-                  <Upload className="animate-bounce mt-5 size-8" />
+                  <Camera className="animate-bounce mt-5 size-8" />
                 </h1>
               </div>
             )}
