@@ -44,7 +44,7 @@ export const Navbar = ({}) => {
         // Fade in
         setIsVisible(true);
       }, 1000);
-    }, 10000);
+    }, 5000);
 
     return () => clearInterval(intervalId);
   }, [menuPhrases.length]);
