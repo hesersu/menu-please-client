@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LogIn } from "lucide-react";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 export function LoginForm({ className, ...props }) {
   // Login Functionality
@@ -27,10 +28,12 @@ export function LoginForm({ className, ...props }) {
   const [errorMessage, setErrorMessage] = useState();
   const nav = useNavigate();
   const { authenticateUser } = useContext(AuthContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Handle Login
   async function handleLogin(event) {
     event.preventDefault();
+    setIsLoading(true);
     const userToLogin = { email, password };
 
     try {
@@ -41,6 +44,7 @@ export function LoginForm({ className, ...props }) {
       console.log("user was logged in successfully", res.data);
       localStorage.setItem("authToken", res.data.authToken);
       await authenticateUser();
+      setIsLoading(false);
       nav("/");
       //! Here was a return autheticateUser(). In case login breaks, maybe that's the issue. :)
     } catch (err) {
@@ -97,8 +101,18 @@ export function LoginForm({ className, ...props }) {
               />
             </div>
             <div className="flex flex-col gap-3">
-              <Button type="submit" className="w-full">
-                <LogIn /> Login
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    {/* Spinner */}
+                    <LoadingSpinner />
+                    Log-in
+                  </>
+                ) : (
+                  <>
+                    <LogIn /> Log-in
+                  </>
+                )}
               </Button>
               {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-card px-2 text-muted-foreground">
