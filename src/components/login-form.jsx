@@ -49,6 +49,7 @@ export function LoginForm({ className, ...props }) {
       //! Here was a return autheticateUser(). In case login breaks, maybe that's the issue. :)
     } catch (err) {
       console.log(err);
+      setIsLoading(false);
       setErrorMessage(err.response?.data?.errorMessage || "Login failed");
       toast.error(err.response?.data?.errorMessage || "Login failed");
     }

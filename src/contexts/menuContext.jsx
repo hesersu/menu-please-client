@@ -79,7 +79,7 @@ const MenuContextWrapper = ({ children }) => {
 
   async function handleCreateMenu(event, formMenuData) {
     event.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
     //Use Form Data because it is not only JSON, but mixed files incl. Image
     const uploadedFile = await uploadFile(formMenuData.file);
     console.log(
@@ -118,10 +118,11 @@ const MenuContextWrapper = ({ children }) => {
           { dishes: JSON.parse(dishes) }
         );
         console.log("patch response", responsePatch.data);
-        setIsLoading(false)
+        setIsLoading(false);
         nav(`/results/${responsePatch.data._id}`);
       } catch (err) {
         console.log(err);
+        setIsLoading(false);
       }
     }
   }

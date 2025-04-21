@@ -39,6 +39,7 @@ export function SignUpForm({ className, ...props }) {
       })
       .catch((err) => {
         toast.error(err.response?.data?.errorMessage || "Sign-up failed");
+        setIsLoading(false);
         console.log(err);
       });
   }
