@@ -13,27 +13,33 @@ import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { LoadingSpinner } from "@/components/loading-spinner";
 
 export function SignUpForm({ className, ...props }) {
   //Functionality to sign up a new user
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
   const nav = useNavigate();
   //function to send a post request to create a user in the DB
   function handleSignup(event) {
     //first is to stop the page from reloading
     event.preventDefault();
+    setIsLoading(true);
     const userToCreateInDB = { username, email, password: password };
     console.log(userToCreateInDB);
     axios
       .post(`${import.meta.env.VITE_API_URL}/auth/signup`, userToCreateInDB)
       .then((res) => {
         console.log("user created in the DB", res);
+        setIsLoading(false);
         nav("/login");
       })
       .catch((err) => {
         toast.error(err.response?.data?.errorMessage || "Sign-up failed");
+        setIsLoading(false);
         console.log(err);
       });
   }
@@ -90,9 +96,19 @@ export function SignUpForm({ className, ...props }) {
               />
             </div>
             <div className="flex flex-col gap-3">
-              <Button type="submit" className="w-full">
-                <UserPlus />
-                Sign-up
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    {/* Spinner */}
+                    <LoadingSpinner />
+                    Sign-up
+                  </>
+                ) : (
+                  <>
+                    <UserPlus />
+                    Sign-up
+                  </>
+                )}
               </Button>
               {/* <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
                 <span className="relative z-10 bg-card px-2 text-muted-foreground">
@@ -122,7 +138,7 @@ export function SignUpForm({ className, ...props }) {
             </div>
           </div>
           <div className="mt-4 text-center text-sm">
-            Have an account?{" "}
+            Have an account?
             <Link to="/login" className="underline underline-offset-4">
               Login
             </Link>
