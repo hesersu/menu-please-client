@@ -29,6 +29,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.7.3",
     "lucide-react": "^0.487.0",
+    "motion": "^12.8.0",
     "posthog-js": "^1.236.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

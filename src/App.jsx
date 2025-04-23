@@ -15,78 +15,82 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { AboutUsPage } from "./pages/AboutUsPage";
 import Footer from "./components/footer";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   return (
     <ThemeProvider>
-      <>
+      <div className="flex flex-col min-h-screen">
         <Navbar />
-        <Routes>
-          <Route path="/sign-up" element={<SignUpPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/menu-history"
-            element={
-              <ProtectedRoute>
-                <MenuHistoryPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/translate-menu"
-            element={
-              <ProtectedRoute>
-                <TranslateMenuPage />
-              </ProtectedRoute>
-            }
-          />
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/sign-up" element={<SignUpPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/landing-page" element={<LandingPage />} />
+            <Route
+              path="/menu-history"
+              element={
+                <ProtectedRoute>
+                  <MenuHistoryPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/translate-menu"
+              element={
+                <ProtectedRoute>
+                  <TranslateMenuPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <TranslateMenuPage />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <TranslateMenuPage />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/results/:menuId"
-            element={
-              <ProtectedRoute>
-                <ResultPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/order-menu/:menuId"
-            element={
-              <ProtectedRoute>
-                <OrderMenuPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/about-us"
-            element={
-              <ProtectedRoute>
-                <AboutUsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
+            <Route
+              path="/results/:menuId"
+              element={
+                <ProtectedRoute>
+                  <ResultPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/order-menu/:menuId"
+              element={
+                <ProtectedRoute>
+                  <OrderMenuPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/about-us"
+              element={
+                <ProtectedRoute>
+                  <AboutUsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </main>
         <Toaster position="top-center" richColors />
         <Footer />
-      </>
+      </div>
     </ThemeProvider>
   );
 }

@@ -138,7 +138,7 @@ export function SignUpForm({ className, ...props }) {
             </div>
           </div>
           <div className="mt-4 text-center text-sm">
-            Have an account?
+            Have an account?{" "}
             <Link to="/login" className="underline underline-offset-4">
               Login
             </Link>
