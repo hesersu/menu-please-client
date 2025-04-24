@@ -167,6 +167,7 @@ const SpeechContextWrapper = ({ children }) => {
   //   speechSynthesis.speak(utterance);
   // };
 
+  //Handle Translate Audio
   return (
     <SpeechContext.Provider
       value={{

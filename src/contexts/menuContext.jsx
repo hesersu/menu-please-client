@@ -225,6 +225,7 @@ const MenuContextWrapper = ({ children }) => {
         handleGetOneMenu,
         createOrderMenu,
         currentOrderMenu,
+        uploadFile
       }}
     >
       {children}
