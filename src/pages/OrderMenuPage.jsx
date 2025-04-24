@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import { useContext } from "react";
 import { useState } from "react";
 import { useRef } from "react";
+import axios from "axios";
 
 //UI Components
 import { Button } from "@/components/ui/button";
@@ -24,19 +25,17 @@ import { AudioLines } from "lucide-react";
 import { CircleStop } from "lucide-react";
 
 export const OrderMenuPage = () => {
-  const { createOrderMenu } = useContext(MenuContext);
+  const { createOrderMenu, uploadFile } = useContext(MenuContext);
   const { translateText, googleTextToSpeech, isPlaying } =
     useContext(SpeechContext);
   const { currentMenu, currentOrderMenu, handleGetOneMenu } =
     useContext(MenuContext);
-  const [fromLang, setFromLang] = useState("en");
-  const [toLang, setToLang] = useState("zh-CN");
-  const [transcript, setTranscript] = useState("");
-  const [translated, setTranslated] = useState("");
+  const [fromLang, setFromLang] = useState("English");
+  const [toLang, setToLang] = useState("Chinese");
   const [isRecording, setIsRecording] = useState(false);
-  const recognitionRef = useRef(null);
-  const isStoppingRef = useRef(false); // Track if we’re already stopping
-  const [speakerRole, setSpeakerRole] = useState(null); // "customer" or "waiter"
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
+  const [speakerRole, setSpeakerRole] = useState(null); 
   const [conversation, setConversation] = useState([]);
   const { menuId } = useParams();
 
@@ -47,7 +46,7 @@ export const OrderMenuPage = () => {
       setConversation([
         {
           role: "Customer",
-          toLang: "Chinese",
+          toLang: currentOrderMenu.language,
           original: currentOrderMenu && currentOrderMenu[0].orderTranslation,
           translated: currentOrderMenu && currentOrderMenu[0].orderOriginal,
         },
@@ -58,87 +57,86 @@ export const OrderMenuPage = () => {
 
       console.log(languageFromCurrentMenu);
       const languageMap = {
-        English: "en",
-        Chinese: "zh-CN",
-        Japanese: "ja",
-        Korean: "ko",
+        English: "English",
+        Chinese: "Chinese",
+        Japanese: "Japanese",
+        Korean: "Korean",
       };
       const languageCode = languageMap[languageFromCurrentMenu];
       setToLang(languageCode);
-      console.log("this is the current language code for target", languageCode);
     }
     loadOrderMenu();
   }, [currentOrderMenu]);
 
-  // Start Recording Function
-  const startRecording = (sourceLang, targetLang, role) => {
-    if (isRecording || recognitionRef.current) return;
 
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Your browser does not support Speech Recognition");
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = sourceLang;
-    recognition.interimResults = false;
-    recognition.continuous = false;
-    console.log("this is the recoginition", recognition);
-
-    recognition.onresult = async (event) => {
-      const spokenText = event.results[0][0].transcript;
-      console.log("spokenText", spokenText);
-      setTranscript(spokenText);
-      const result = await translateText(spokenText, sourceLang, targetLang);
-      setTranslated(result);
-
-      //Determin role of speaker then append to conversation array
-      setConversation((prev) => [
-        ...prev,
-        {
-          role: role === "customer" ? "Customer" : "Waiter",
-          toLang,
-          original: spokenText,
-          translated: result,
-        },
-      ]);
-      console.log(conversation);
+  //New start Recording function
+  const startRecording = async (source, targetLanguage, role ) => {
+    console.log(source, targetLanguage, role)
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const mediaRecorder = new MediaRecorder(stream);
+    mediaRecorderRef.current = mediaRecorder;
+    audioChunksRef.current = [];
+  
+    mediaRecorder.ondataavailable = (event) => {
+      audioChunksRef.current.push(event.data);
     };
+  
+    mediaRecorder.onstop = async () => {
+      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/ogg' });
+      console.log(audioBlob)
+  
+      // Upload Audio File to Google and save audioUri, mimeType
 
-    recognition.onerror = (e) => {
-      console.error("Recognition error:", e);
-      stopRecording(); // this should trigger `onend`, but we now also add a backup
+      const response = await uploadFile(audioBlob);
+      console.log(response)
+      const audioUri = response.file.uri; 
+      console.log("audio uri", audioUri)
+      const mimeType = response.file.mimeType;
+      console.log("audio mimeType", mimeType)
+
+      //Call backend function to transcribe and translate the audio. Hand-over audio Uri and mime Type. Receive back the translated and transcribed text. 
+      const translationResponse = await axios.post(`${import.meta.env.VITE_API_URL}/gemini/translate-audio-from-uri`, {
+        audioUri, 
+        mimeType,
+        targetLanguage,
+      })
+      const { translationResult } = translationResponse.data;
+
+  
+      let parsedResult = translationResult;
+
+        if (typeof translationResult === "string") {
+          parsedResult = JSON.parse(translationResult);  // Safely parse if needed
+        }
+
+        if (parsedResult && parsedResult.length > 0) {
+          const { audioTranscription, audioTranslation } = parsedResult[0];
+          console.log(audioTranscription, audioTranslation); 
+
+          setConversation((prev) => [
+            ...prev,
+            {
+              role: role === "customer" ? "Customer" : "Waiter",
+              toLang: targetLanguage,
+              original: audioTranscription,
+              translated: audioTranslation,
+            },
+          ]);
+        } else {
+          console.error("No transcription/translation found.");
+        }
+
     };
-
-    recognition.onend = () => {
-      console.log("✅ onend triggered");
-      recognitionRef.current = null;
-      setIsRecording(false);
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
-    setTimeout(() => {
-      setIsRecording(true);
-    }, 500);
+  
+    mediaRecorder.start();
+    setIsRecording(true);
   };
 
   // stop Recording Function
   const stopRecording = () => {
-    if (recognitionRef.current && !isStoppingRef.current) {
-      console.log("stopRecording() called");
-      isStoppingRef.current = true;
-      recognitionRef.current.stop();
-
-      // Force fallback after 1.5s
-      setTimeout(() => {
-        recognitionRef.current = null;
-        setIsRecording(false);
-        isStoppingRef.current = false;
-        console.log("⏱ Forced fallback stop triggered");
-      }, 1500);
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop();  // This will trigger mediaRecorder.onstop
+      setIsRecording(false);  // Update your state to reflect recording stopped
     }
   };
 
