@@ -38,6 +38,7 @@ export const OrderMenuPage = () => {
   const [speakerRole, setSpeakerRole] = useState(null);
   const [conversation, setConversation] = useState([]);
   const { menuId } = useParams();
+  const streamRef = useRef(null);
 
   useEffect(() => {
     async function loadOrderMenu() {
@@ -70,8 +71,9 @@ export const OrderMenuPage = () => {
 
   //New start Recording function
   const startRecording = async (source, targetLanguage, role) => {
-    console.log(source, targetLanguage, role);
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    streamRef.current = stream; // Store the stream reference
+
     const mediaRecorder = new MediaRecorder(stream);
     mediaRecorderRef.current = mediaRecorder;
     audioChunksRef.current = [];
@@ -139,7 +141,15 @@ export const OrderMenuPage = () => {
       mediaRecorderRef.current.state !== "inactive"
     ) {
       mediaRecorderRef.current.stop(); // This will trigger mediaRecorder.onstop
-      setIsRecording(false); // Update your state to reflect recording stopped
+
+      // Stop all tracks in the stream to release the microphone
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+
+      setIsRecording(false);
     }
   };
 
