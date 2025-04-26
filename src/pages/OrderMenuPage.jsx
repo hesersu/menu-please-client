@@ -180,7 +180,7 @@ export const OrderMenuPage = () => {
             <h4 className="mb-4 text-sm font-medium leading-none">
               Conversation
             </h4>
-            {[...conversation].reverse().map((oneText, index) => (
+            {[...conversation].map((oneText, index) => (
               <div
                 key={index}
                 className={`flex ${
