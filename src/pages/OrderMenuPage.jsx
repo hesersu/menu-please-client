@@ -35,9 +35,10 @@ export const OrderMenuPage = () => {
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
-  const [speakerRole, setSpeakerRole] = useState(null); 
+  const [speakerRole, setSpeakerRole] = useState(null);
   const [conversation, setConversation] = useState([]);
   const { menuId } = useParams();
+  const streamRef = useRef(null);
 
   useEffect(() => {
     async function loadOrderMenu() {
@@ -68,75 +69,87 @@ export const OrderMenuPage = () => {
     loadOrderMenu();
   }, [currentOrderMenu]);
 
-
   //New start Recording function
-  const startRecording = async (source, targetLanguage, role ) => {
-    console.log(source, targetLanguage, role)
+  const startRecording = async (source, targetLanguage, role) => {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    streamRef.current = stream; // Store the stream reference
+
     const mediaRecorder = new MediaRecorder(stream);
     mediaRecorderRef.current = mediaRecorder;
     audioChunksRef.current = [];
-  
+
     mediaRecorder.ondataavailable = (event) => {
       audioChunksRef.current.push(event.data);
     };
-  
+
     mediaRecorder.onstop = async () => {
-      const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/ogg' });
-      console.log(audioBlob)
-  
+      const audioBlob = new Blob(audioChunksRef.current, { type: "audio/ogg" });
+      console.log(audioBlob);
+
       // Upload Audio File to Google and save audioUri, mimeType
 
       const response = await uploadFile(audioBlob);
-      console.log(response)
-      const audioUri = response.file.uri; 
-      console.log("audio uri", audioUri)
+      console.log(response);
+      const audioUri = response.file.uri;
+      console.log("audio uri", audioUri);
       const mimeType = response.file.mimeType;
-      console.log("audio mimeType", mimeType)
+      console.log("audio mimeType", mimeType);
 
-      //Call backend function to transcribe and translate the audio. Hand-over audio Uri and mime Type. Receive back the translated and transcribed text. 
-      const translationResponse = await axios.post(`${import.meta.env.VITE_API_URL}/gemini/translate-audio-from-uri`, {
-        audioUri, 
-        mimeType,
-        targetLanguage,
-      })
+      //Call backend function to transcribe and translate the audio. Hand-over audio Uri and mime Type. Receive back the translated and transcribed text.
+      const translationResponse = await axios.post(
+        `${import.meta.env.VITE_API_URL}/gemini/translate-audio-from-uri`,
+        {
+          audioUri,
+          mimeType,
+          targetLanguage,
+        }
+      );
       const { translationResult } = translationResponse.data;
 
-  
       let parsedResult = translationResult;
 
-        if (typeof translationResult === "string") {
-          parsedResult = JSON.parse(translationResult);  // Safely parse if needed
-        }
+      if (typeof translationResult === "string") {
+        parsedResult = JSON.parse(translationResult); // Safely parse if needed
+      }
 
-        if (parsedResult && parsedResult.length > 0) {
-          const { audioTranscription, audioTranslation } = parsedResult[0];
-          console.log(audioTranscription, audioTranslation); 
+      if (parsedResult && parsedResult.length > 0) {
+        const { audioTranscription, audioTranslation } = parsedResult[0];
+        console.log(audioTranscription, audioTranslation);
 
-          setConversation((prev) => [
-            ...prev,
-            {
-              role: role === "customer" ? "Customer" : "Waiter",
-              toLang: targetLanguage,
-              original: audioTranscription,
-              translated: audioTranslation,
-            },
-          ]);
-        } else {
-          console.error("No transcription/translation found.");
-        }
-
+        setConversation((prev) => [
+          ...prev,
+          {
+            role: role === "customer" ? "Customer" : "Waiter",
+            toLang: targetLanguage,
+            original: audioTranscription,
+            translated: audioTranslation,
+          },
+        ]);
+      } else {
+        console.error("No transcription/translation found.");
+      }
     };
-  
+
     mediaRecorder.start();
     setIsRecording(true);
   };
 
   // stop Recording Function
   const stopRecording = () => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();  // This will trigger mediaRecorder.onstop
-      setIsRecording(false);  // Update your state to reflect recording stopped
+    if (
+      mediaRecorderRef.current &&
+      mediaRecorderRef.current.state !== "inactive"
+    ) {
+      mediaRecorderRef.current.stop(); // This will trigger mediaRecorder.onstop
+
+      // Stop all tracks in the stream to release the microphone
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+
+      setIsRecording(false);
     }
   };
 
@@ -159,7 +172,7 @@ export const OrderMenuPage = () => {
     <div className="lg:w-4/12 lg:mx-auto">
       <h2 className="mx-6 mb-5 flex items-center">
         <MicIcon className="mr-2" />
-        <span>Live Translator (Experimental)</span>
+        <span>Live Translator</span>
       </h2>
       <div className="mx-6 mb-5">
         <ScrollArea className="h-120 w-full rounded-md border">
@@ -167,7 +180,7 @@ export const OrderMenuPage = () => {
             <h4 className="mb-4 text-sm font-medium leading-none">
               Conversation
             </h4>
-            {[...conversation].reverse().map((oneText, index) => (
+            {[...conversation].map((oneText, index) => (
               <div
                 key={index}
                 className={`flex ${

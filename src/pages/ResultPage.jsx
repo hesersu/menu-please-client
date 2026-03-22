@@ -69,6 +69,13 @@ const ResultPage = () => {
     }));
   };
 
+  // Handle button disabled if none of the order amounts are more than 0
+
+  // Add this before the return statement in your component
+  const hasOrderItems = Object.values(orderItems).some(
+    (value) => parseInt(value) > 0
+  );
+
   // Ordering - For the getOrderArray function, parse the integers when needed
   const getOrderArray = () => {
     return Object.keys(orderItems)
@@ -182,6 +189,7 @@ const ResultPage = () => {
             }}
             variant="default"
             className="my-6 w-10/12"
+            disabled={!hasOrderItems}
           >
             Order Now
           </Button>
